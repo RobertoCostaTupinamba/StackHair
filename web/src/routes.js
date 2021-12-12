@@ -8,6 +8,7 @@ import Agendamentos from './pages/Agendamentos';
 import Clientes from './pages/Clientes';
 import TelaLogin from './pages/Login';
 import NotFound from './pages/NotFound';
+import TelaCadastro from './pages/Cadastro';
 
 
 
@@ -30,6 +31,7 @@ const Rotas = () => {
                         <Routes>
                             <Route path='*' element={<Navigate to="/" />} />
                             <Route path="/" element={<TelaLogin />} />
+                            <Route path="/cadastrar" element={<TelaCadastro />} />
                         </Routes>
                     </>
             }
