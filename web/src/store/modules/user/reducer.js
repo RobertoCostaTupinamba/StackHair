@@ -2,7 +2,7 @@ import produce from 'immer';
 import types from "./types";
 //Reducer contem estados (state) globais
 const INITIAL_STATE = {
-    logado: false,
+    logado: true,
     token: null,
 }
 
