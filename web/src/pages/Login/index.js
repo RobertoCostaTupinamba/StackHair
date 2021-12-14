@@ -5,9 +5,19 @@ import { Link } from 'react-router-dom';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-
+import { useDispatch } from 'react-redux';
+import { autenticarUsuario } from '../../store/modules/user/actions';
 
 const TelaLogin = () => {
+    const dispatch = useDispatch();
+
+    function auth(){
+        dispatch(autenticarUsuario({
+            email: "robertotupinamba@gmail.com",
+            senha: "12345678"
+        }))
+    }
+
     return (
         <Container>
             <Content>
@@ -24,7 +34,14 @@ const TelaLogin = () => {
                     <Input icon="mdi mdi-lock-outline" name="password" type="password" placeholder="Password" />
 
                     
-                    <Button type="submit">Entrar</Button>
+                    <Button onClick={(event) => {
+
+                        auth({
+                            email: 'roberto@gmail.com',
+                            password: '12345678'
+                        })
+                        
+                    }} type="submit">Entrar</Button>
 
                     <Link to="/forgot">Esqueci a senha</Link>
                 </form>
