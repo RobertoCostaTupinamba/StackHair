@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const validateEmail = require('../utils/validateEmail')
 
+const timeStamp = require('../utils/timeStamp')
 
 
 const Cliente = new Schema({
@@ -54,7 +55,7 @@ const Cliente = new Schema({
     },
     dataCadastro: {
         type: Date,
-        default: Date.now(),
+        default: timeStamp,
     }
 })
 

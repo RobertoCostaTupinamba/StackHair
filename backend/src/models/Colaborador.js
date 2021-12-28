@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const validateEmail = require('../utils/validateEmail')
 
+const timeStamp = require('../utils/timeStamp')
 
 
 const Colaborador = new Schema({
@@ -43,7 +44,7 @@ const Colaborador = new Schema({
     },
     dataCadastro: {
         type: Date,
-        default: Date.now(),
+        default: timeStamp,
     }
 })
 

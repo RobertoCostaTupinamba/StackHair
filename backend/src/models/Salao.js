@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 const validateEmail = require('../utils/validateEmail')
 
+const timeStamp = require('../utils/timeStamp')
+
 const Salao = new Schema({
     nome: {
         type: String,
@@ -37,7 +39,7 @@ const Salao = new Schema({
     },
     dataCadastro: {
         type: Date,
-        default: Date.now(),
+        default: timeStamp,
     }
 })
 

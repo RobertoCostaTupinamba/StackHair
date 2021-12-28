@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const timeStamp = require('../../utils/timeStamp')
 
 const SalaoCliente = new Schema({
     salaoId: {
@@ -20,7 +21,7 @@ const SalaoCliente = new Schema({
     },
     dataCadastro: {
         type: Date,
-        default: Date.now(),
+        default: timeStamp,
     }
 })
 
