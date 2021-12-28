@@ -22,6 +22,7 @@ const Colaborador = new Schema({
     senha: {
         type: String,
         required: [true, 'Senha é obrigatório'],
+        minlength: [6, 'Senha muito fraca'],
     },
     telefone: {
         type: String,
