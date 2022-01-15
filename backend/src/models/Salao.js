@@ -34,8 +34,13 @@ const Salao = new Schema({
         pais: String,
     },
     geo: {
-        tipo: String,
-        coordinates: Array,
+        coordinates: {
+            type: [Number], 
+        },
+        type: {
+            type: String, // Don't do `{ location: { type: String } }`
+            enum: ['Point'], // 'location.type' must be 'Point'
+        },
     },
     dataCadastro: {
         type: Date,
@@ -43,6 +48,6 @@ const Salao = new Schema({
     }
 })
 
-Salao.index({ geo: '2dsphere'})
+Salao.index({ geo: '2dsphere' });
 
 module.exports = mongoose.model('Salao', Salao)

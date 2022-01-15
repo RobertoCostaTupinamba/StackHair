@@ -2,14 +2,20 @@ require('dotenv').config();
 
 const express = require('express');
 var cors = require('cors');
+
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const multer = require('multer');
+
+const Multer = multer({
+    storage: multer.memoryStorage()
+})
 
 const app = express();
 
 //Config json
-app.use(express.json())
-app.use(cors())
+app.use(express.json());
+app.use(cors());
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
@@ -18,6 +24,7 @@ app.get('/', (req, res) => {
 
 //Rotas
 app.use('/salao', require('./src/routes/salao.routes'))
+app.use('/servico', Multer.any(), require('./src/routes/servico.routes'));
 
 //Private Route
 app.get('/users', require('./src/middlewares/checkToken'), require("./src/controllers/buscarUsuario"))
