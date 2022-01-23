@@ -25,6 +25,8 @@ app.get('/', (req, res) => {
 //Rotas
 app.use('/salao', require('./src/routes/salao.routes'))
 app.use('/servico', Multer.any(), require('./src/routes/servico.routes'));
+app.use('/horario', require('./src/routes/horario.routes'))
+app.use('/colaborador', require('./src/routes/colaborador.routes'))
 
 //Private Route
 app.get('/users', require('./src/middlewares/checkToken'), require("./src/controllers/buscarUsuario"))

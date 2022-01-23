@@ -24,17 +24,17 @@ const TelaLogin = () => {
             
             const schema = Yup.object().shape({
                 email: Yup.string().required('E-mail obrigatório').email('Digite um E-mail válido'),
-                password: Yup.string().required('Senha obrigatório'),
+                senha: Yup.string().required('Senha obrigatório'),
             })
 
             await schema.validate(data, {
                 abortEarly: false
             })
 
-            dispatch(autenticarUsuario({
-                email: "robertotupinamba@gmail.com",
-                senha: "12345678"
-            }))
+
+            dispatch(autenticarUsuario(data))
+
+           
 
         } catch (err) {
             const errors = getValidationError(err)
@@ -56,7 +56,7 @@ const TelaLogin = () => {
                     }}> Faça seu login</h1>
 
                     <Input icon="mdi mdi-email-outline" name="email" placeholder="E-mail" />
-                    <Input icon="mdi mdi-lock-outline" name="password" type="password" placeholder="Password" />
+                    <Input icon="mdi mdi-lock-outline" name="senha" type="password" placeholder="Senha" />
 
                     
                     <Button type="submit">Entrar</Button>

@@ -1,52 +1,53 @@
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
-//Models
-const User = require('../models/User');
+// Models
+const User = require("../models/User");
 
 module.exports = async (req, res) => {
-    const { email, password } = req.body
+  const { email, password } = req.body;
 
-    //Validação
-    if (!email) {
-        errosCamposFaltando.push('O nome é obrigatório')
-    }
+  let errosCamposFaltando;
 
-    if (!password) {
-        errosCamposFaltando.push('O email é obrigatório')
-    }
+  // Validação
+  if (!email) {
+    errosCamposFaltando.push("O nome é obrigatório");
+  }
 
-    //check if user exists
-    const user = await User.findOne({ email: email })
+  if (!password) {
+    errosCamposFaltando.push("O senha é obrigatório");
+  }
 
-    if (!user) {
-        return res.status(404).json({ msg: "E-mail ou senha inválida!" })
-    }
+  // check if user exists
+  const user = await User.findOne({ email });
 
-    //check password
-    const checkPassword = await bcrypt.compare(password, user.password)
+  if (!user) {
+    return res.status(404).json({ msg: "E-mail ou senha inválida!" });
+  }
 
-    if (!checkPassword) {
-        return res.status(422).json({ msg: "E-mail ou senha inválida!" })
-    }
+  // check password
+  const checkPassword = await bcrypt.compare(password, user.password);
 
-    try {
-        const secret = process.env.SECRET;
+  if (!checkPassword) {
+    return res.status(422).json({ msg: "E-mail ou senha inválida!" });
+  }
 
-        const token = jwt.sign(
-            {
-                id: user._id
-            },
-            secret,
-            {
-                expiresIn: "5s" //Expira em 5 segundos
-            }
-        )
+  try {
+    const secret = process.env.SECRET;
 
-        res.status(200).json({ msg: "Autenticado", token })
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ msg: 'Houve um erro inesperado' })
-    }
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      secret,
+      {
+        expiresIn: "5s", // Expira em 5 segundos
+      }
+    );
 
-}
+    res.status(200).json({ msg: "Autenticado", token });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: "Houve um erro inesperado" });
+  }
+};

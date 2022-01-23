@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^12.1.10",
     "@unform/core": "^2.1.6",
     "@unform/web": "^2.1.6",
+    "axios": "^0.24.0",
     "immer": "^9.0.7",
     "moment": "^2.29.1",
     "polished": "^4.1.3",
