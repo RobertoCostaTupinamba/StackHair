@@ -100,10 +100,124 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Pode ser que teremos que mudar esta rota pra dentro de salão
 router.put("/:colaboradorId", async (req, res) => {
   try {
-    // eslint-disable-next-line no-empty-pattern
-    const {} = req.body;
+    const { vinculo, vinculoId, especialidades } = req.body;
+    const { colaboradorId } = req.params;
+
+    // Vinculo
+    const salaoColaborador = await SalaoColaborador.findByIdAndUpdate(
+      vinculoId,
+      { status: vinculo }
+    );
+
+    if (!salaoColaborador) {
+      return res.status(404).json({
+        error: true,
+        message: "O vinculo entre salão e colaborador não foi encontrada",
+      });
+    }
+
+    // Especialidades
+    const colaborServico = await ColaboradorServico.deleteMany({
+      colaboradorId,
+    });
+
+    if (colaborServico.deletedCount === 0) {
+      return res.status(404).json({
+        error: true,
+        message: "O vinculo entre colaborador e serviço não foi encontrada",
+      });
+    }
+
+    const colaborServicoCreate = await ColaboradorServico.insertMany(
+      especialidades.map((servicoId) => ({
+        servicoId,
+        colaboradorId,
+      }))
+    );
+
+    if (!colaborServicoCreate) {
+      return res.status(500).json({
+        error: true,
+        message:
+          "Houve um erro interno no servidor ao tentar cadastrar a relação entre colaborador e serviço",
+      });
+    }
+
+    res.json({ error: false });
+  } catch (err) {
+    res.json({ error: true, message: err.message });
+  }
+});
+
+router.delete("/vinculo/:id", async (req, res) => {
+  try {
+    const salaoColaborador = await SalaoColaborador.findByIdAndUpdate(
+      req.params.id,
+      { status: "E" }
+    );
+
+    if (!salaoColaborador) {
+      return res.status(404).json({
+        error: true,
+        message: "O vinculo entre salão e colaborador não foi encontrada",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+    });
+  } catch (err) {
+    res.json({ error: true, message: err.message });
+  }
+});
+
+router.post("/filter", async (req, res) => {
+  try {
+    const colaboradores = await Colaborador.find(req.body.filters, {
+      senha: 0,
+      __v: 0,
+    });
+
+    return res.json({ error: false, colaboradores });
+  } catch (err) {
+    res.json({ error: true, message: err.message });
+  }
+});
+
+router.get("/salao/:salaoId", async (req, res) => {
+  try {
+    const { salaoId } = req.params;
+    const listaColaboradores = [];
+
+    // Recuperar vinculos
+    const salaoColaboradores = await SalaoColaborador.find({
+      salaoId,
+      status: { $ne: "E" },
+    })
+      .populate("colaboradorId", { senha: 0, __v: 0 })
+      .select("colaboradorId dataCadastro status");
+
+    for (const vinculo of salaoColaboradores) {
+      const especialidades = await ColaboradorServico.find({
+        colaboradorId: vinculo.colaboradorId._id,
+      });
+
+      listaColaboradores.push({ ...vinculo._doc, especialidades });
+    }
+
+    return res.json({
+      error: false,
+      colaboradores: listaColaboradores.map((vinculo) => ({
+        ...vinculo.colaboradorId._doc,
+        vinculoId: vinculo._id,
+        vinculo: vinculo.status,
+        especialidades: vinculo.especialidades,
+        dataCadastro: vinculo.dataCadastro,
+      })),
+    });
   } catch (err) {
     res.json({ error: true, message: err.message });
   }

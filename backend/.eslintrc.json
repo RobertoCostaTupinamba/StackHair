@@ -19,6 +19,7 @@
     "prettier"
   ],
   "rules": {
+    "no-console":"off",
     "func-names":"off",
     "no-await-in-loop":"off",
     "no-unused-vars":"off",
