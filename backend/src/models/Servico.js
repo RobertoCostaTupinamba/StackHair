@@ -1,13 +1,13 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const timeStamp = require("../utils/timeStamp");
+const timeStamp = require('../utils/timeStamp');
 
 const Servico = new Schema({
   salaoId: {
     type: mongoose.Types.ObjectId,
-    ref: "Salao",
+    ref: 'Salao',
     required: true,
   },
   titulo: {
@@ -32,8 +32,8 @@ const Servico = new Schema({
   },
   status: {
     type: String,
-    enum: ["A", "I", "E"],
-    default: "A",
+    enum: ['A', 'I', 'E'],
+    default: 'A',
   },
   dataCadastro: {
     type: Date,
@@ -41,4 +41,4 @@ const Servico = new Schema({
   },
 });
 
-module.exports = mongoose.model("Servico", Servico);
+module.exports = mongoose.model('Servico', Servico);

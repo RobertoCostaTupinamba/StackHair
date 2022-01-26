@@ -1,15 +1,15 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const validateEmail = require("../utils/validateEmail");
+const validateEmail = require('../utils/validateEmail');
 
-const timeStamp = require("../utils/timeStamp");
+const timeStamp = require('../utils/timeStamp');
 
 const Salao = new Schema({
   nome: {
     type: String,
-    required: [true, "Nome é obrigatório"],
+    required: [true, 'Nome é obrigatório'],
   },
   foto: String,
   capa: String,
@@ -18,13 +18,13 @@ const Salao = new Schema({
     trim: true,
     lowercase: true,
     unique: true,
-    required: [true, "E-mail é obrigatório"],
-    validate: [validateEmail, "Insira um endereço de E-mail válido"],
+    required: [true, 'E-mail é obrigatório'],
+    validate: [validateEmail, 'Insira um endereço de E-mail válido'],
   },
   senha: {
     type: String,
-    required: [true, "Senha é obrigatório"],
-    minlength: [6, "Senha muito fraca"],
+    required: [true, 'Senha é obrigatório'],
+    minlength: [6, 'Senha muito fraca'],
   },
   telefone: String,
   endereco: {
@@ -40,7 +40,7 @@ const Salao = new Schema({
     },
     type: {
       type: String, // Don't do `{ location: { type: String } }`
-      enum: ["Point"], // 'location.type' must be 'Point'
+      enum: ['Point'], // 'location.type' must be 'Point'
     },
   },
   dataCadastro: {
@@ -49,6 +49,6 @@ const Salao = new Schema({
   },
 });
 
-Salao.index({ geo: "2dsphere" });
+Salao.index({ geo: '2dsphere' });
 
-module.exports = mongoose.model("Salao", Salao);
+module.exports = mongoose.model('Salao', Salao);

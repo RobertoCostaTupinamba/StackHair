@@ -1,11 +1,11 @@
-const express = require("express");
+const express = require('express');
 
 const router = express.Router();
 
-const Servico = require("../models/Servico");
-const Salao = require("../models/Salao");
-const Arquivo = require("../models/Arquivo");
-const { uploadToS3, deleteFileS3 } = require("../services/firebase");
+const Servico = require('../models/Servico');
+const Salao = require('../models/Salao');
+const Arquivo = require('../models/Arquivo');
+const { uploadToS3, deleteFileS3 } = require('../services/firebase');
 
 // Criação de um serviço
 // Dados esperados:
@@ -19,23 +19,21 @@ const { uploadToS3, deleteFileS3 } = require("../services/firebase");
 //   "descricao": "Descrição Teste"
 // }
 // - arquivos
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const { salaoId } = req.body;
   const urlArquivos = [];
   const errors = [];
   const jsonServico = JSON.parse(req.body.servico);
 
-  const salao = await Salao.findById(salaoId, "-senha");
+  const salao = await Salao.findById(salaoId, '-senha');
 
   // Upload de imagem
   if (req.files.length !== 0) {
     for (const [i, key] of Object.keys(req.files).entries()) {
       const imagem = req.files[key];
 
-      const nameParts = imagem.originalname.split(".");
-      const fileName = `${new Date().getTime()}.${
-        nameParts[nameParts.length - 1]
-      }`;
+      const nameParts = imagem.originalname.split('.');
+      const fileName = `${new Date().getTime()}.${nameParts[nameParts.length - 1]}`;
       const path = `servicos/${salaoId}/${fileName}`;
 
       const response = await uploadToS3(imagem, path);
@@ -54,66 +52,36 @@ router.post("/", async (req, res) => {
   }
 
   if (!salao) {
-    return res.status(404).json({ error: true, message: "Salão não existe" });
+    return res.status(404).json({ error: true, message: 'Salão não existe' });
   }
 
   // Validação
   if (!salao) {
-    return res.status(404).json({ error: true, message: "Salão não existe" });
+    return res.status(404).json({ error: true, message: 'Salão não existe' });
   }
 
-  if (
-    typeof jsonServico.titulo === "undefined" ||
-    jsonServico.titulo.length === 0
-  ) {
-    return res
-      .status(422)
-      .json({ error: true, message: "Serviço precisa ter um titulo" });
+  if (typeof jsonServico.titulo === 'undefined' || jsonServico.titulo.length === 0) {
+    return res.status(422).json({ error: true, message: 'Serviço precisa ter um titulo' });
   }
 
-  if (
-    typeof jsonServico.preco === "undefined" ||
-    jsonServico.preco.length === 0
-  ) {
-    return res
-      .status(422)
-      .json({ error: true, message: "Serviço precisa ter um preço" });
+  if (typeof jsonServico.preco === 'undefined' || jsonServico.preco.length === 0) {
+    return res.status(422).json({ error: true, message: 'Serviço precisa ter um preço' });
   }
 
-  if (
-    typeof jsonServico.comissao === "undefined" ||
-    jsonServico.comissao.length === 0
-  ) {
-    return res
-      .status(422)
-      .json({ error: true, message: "Serviço precisa ter uma comissao" });
+  if (typeof jsonServico.comissao === 'undefined' || jsonServico.comissao.length === 0) {
+    return res.status(422).json({ error: true, message: 'Serviço precisa ter uma comissao' });
   }
 
-  if (
-    typeof jsonServico.duracao === "undefined" ||
-    jsonServico.duracao.length === 0
-  ) {
-    return res
-      .status(422)
-      .json({ error: true, message: "Serviço precisa ter uma duracao" });
+  if (typeof jsonServico.duracao === 'undefined' || jsonServico.duracao.length === 0) {
+    return res.status(422).json({ error: true, message: 'Serviço precisa ter uma duracao' });
   }
 
-  if (
-    typeof jsonServico.duracao === "undefined" ||
-    jsonServico.duracao.length === 0
-  ) {
-    return res
-      .status(422)
-      .json({ error: true, message: "Serviço precisa ter uma duracao" });
+  if (typeof jsonServico.duracao === 'undefined' || jsonServico.duracao.length === 0) {
+    return res.status(422).json({ error: true, message: 'Serviço precisa ter uma duracao' });
   }
 
-  if (
-    typeof jsonServico.descricao === "undefined" ||
-    jsonServico.descricao.length === 0
-  ) {
-    return res
-      .status(422)
-      .json({ error: true, message: "Serviço precisa ter uma descricao" });
+  if (typeof jsonServico.descricao === 'undefined' || jsonServico.descricao.length === 0) {
+    return res.status(422).json({ error: true, message: 'Serviço precisa ter uma descricao' });
   }
 
   // CRIAR SERVIÇO
@@ -123,7 +91,7 @@ router.post("/", async (req, res) => {
   // CRIAR ARQUIVO
   const arquivos = urlArquivos.map((arquivo) => ({
     referenciaId: servico._id,
-    model: "Servico",
+    model: 'Servico',
     arquivo,
   }));
   await Arquivo.insertMany(arquivos);
@@ -132,7 +100,7 @@ router.post("/", async (req, res) => {
 });
 
 // Atualizar um serviço
-router.put("/:id", async (req, res) => {
+router.put('/:id', async (req, res) => {
   const { salaoId } = req.body;
   const urlArquivos = [];
   const errors = [];
@@ -142,9 +110,7 @@ router.put("/:id", async (req, res) => {
   let servico = await Servico.findByIdAndUpdate(req.params.id, jsonSevico);
 
   if (!servico) {
-    return res
-      .status(404)
-      .json({ error: true, message: "Serviço não encontrado" });
+    return res.status(404).json({ error: true, message: 'Serviço não encontrado' });
   }
 
   // Pegando dados atualizados
@@ -155,10 +121,8 @@ router.put("/:id", async (req, res) => {
     for (const [i, key] of Object.keys(req.files).entries()) {
       const imagem = req.files[key];
 
-      const nameParts = imagem.originalname.split(".");
-      const fileName = `${new Date().getTime()}.${
-        nameParts[nameParts.length - 1]
-      }`;
+      const nameParts = imagem.originalname.split('.');
+      const fileName = `${new Date().getTime()}.${nameParts[nameParts.length - 1]}`;
       const path = `servicos/${salaoId}/${fileName}`;
 
       const response = await uploadToS3(imagem, path);
@@ -180,7 +144,7 @@ router.put("/:id", async (req, res) => {
     // CRIAR ARQUIVO
     const arquivos = urlArquivos.map((arquivo) => ({
       referenciaId: req.params.id,
-      model: "Servico",
+      model: 'Servico',
       arquivo,
     }));
     await Arquivo.insertMany(arquivos);
@@ -189,18 +153,18 @@ router.put("/:id", async (req, res) => {
   res.json({ error: false, servico });
 });
 
-router.get("/salao/:salaoId", async (req, res) => {
+router.get('/salao/:salaoId', async (req, res) => {
   try {
     const servicosSalao = [];
 
     const servicos = await Servico.find({
       salaoId: req.params.salaoId,
-      status: { $ne: "E" },
+      status: { $ne: 'E' },
     });
 
     for (const servico of servicos) {
       const arquivos = await Arquivo.find({
-        model: "Servico",
+        model: 'Servico',
         referenciaId: servico._id,
       });
       servicosSalao.push({ ...servico._doc, arquivos });
@@ -214,14 +178,12 @@ router.get("/salao/:salaoId", async (req, res) => {
   }
 });
 
-router.post("/delete-arquivo", async (req, res) => {
+router.post('/delete-arquivo', async (req, res) => {
   try {
     const { id } = req.body;
 
     if (!id) {
-      return res
-        .status(400)
-        .json({ error: true, message: "É necessario informar um id" });
+      return res.status(400).json({ error: true, message: 'É necessario informar um id' });
     }
 
     const response = await deleteFileS3(id);
@@ -230,17 +192,17 @@ router.post("/delete-arquivo", async (req, res) => {
       return res.status(404).json({ error: true, message: response.message });
     }
 
-    res.json({ error: false, message: "Arquivo deletado" });
+    res.json({ error: false, message: 'Arquivo deletado' });
   } catch (err) {
     return res.status(422).json({ error: true, message: err.message });
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    await Servico.findByIdAndUpdate(id, { status: "E" });
+    await Servico.findByIdAndUpdate(id, { status: 'E' });
 
     res.json({ error: false });
   } catch (err) {

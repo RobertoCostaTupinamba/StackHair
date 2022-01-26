@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 
 // Models
-const User = require("../models/User");
+const User = require('../models/User');
 
 module.exports = async (req, res) => {
   const { name, email, password } = req.body;
@@ -10,15 +10,15 @@ module.exports = async (req, res) => {
 
   // Validação
   if (!name) {
-    errosCamposFaltando.push("O nome é obrigatório");
+    errosCamposFaltando.push('O nome é obrigatório');
   }
 
   if (!email) {
-    errosCamposFaltando.push("O email é obrigatório");
+    errosCamposFaltando.push('O email é obrigatório');
   }
 
   if (!password) {
-    errosCamposFaltando.push("O senha é obrigatório");
+    errosCamposFaltando.push('O senha é obrigatório');
   }
 
   if (errosCamposFaltando.length !== 0) {
@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    return res.status(422).json({ msg: "Por favor, utilize outro e-mail" });
+    return res.status(422).json({ msg: 'Por favor, utilize outro e-mail' });
   }
 
   // create password
@@ -47,9 +47,9 @@ module.exports = async (req, res) => {
   try {
     await user.save();
 
-    res.status(201).json({ msg: "Usuário criado com sucesso" });
+    res.status(201).json({ msg: 'Usuário criado com sucesso' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msg: "Houve um erro inesperado" });
+    return res.status(500).json({ msg: 'Houve um erro inesperado' });
   }
 };

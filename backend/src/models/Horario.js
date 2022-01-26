@@ -1,26 +1,26 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const timeStamp = require("../utils/timeStamp");
+const timeStamp = require('../utils/timeStamp');
 
 const Horario = new Schema({
   salaoId: {
     type: mongoose.Types.ObjectId,
-    ref: "Salao",
+    ref: 'Salao',
     required: true,
   },
   especialidades: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "Servico",
+      ref: 'Servico',
       required: true,
     },
   ],
   colaboradores: [
     {
       type: mongoose.Types.ObjectId,
-      ref: "Colaborador",
+      ref: 'Colaborador',
       required: true,
     },
   ],
@@ -42,4 +42,4 @@ const Horario = new Schema({
   },
 });
 
-module.exports = mongoose.model("Horario", Horario);
+module.exports = mongoose.model('Horario', Horario);

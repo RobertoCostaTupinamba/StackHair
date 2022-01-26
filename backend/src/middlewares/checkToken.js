@@ -1,11 +1,11 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
 module.exports = function checkToken(req, res, next) {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ msg: "Acesso Negado!!" });
+    return res.status(401).json({ msg: 'Acesso Negado!!' });
   }
 
   try {
@@ -17,6 +17,6 @@ module.exports = function checkToken(req, res, next) {
     next();
   } catch (error) {
     console.log(error);
-    res.status(400).json({ msg: "Token inválido" });
+    res.status(400).json({ msg: 'Token inválido' });
   }
 };

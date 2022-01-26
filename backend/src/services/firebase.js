@@ -1,9 +1,9 @@
-const admin = require("firebase-admin");
-const Salao = require("../models/Salao");
-const Arquivo = require("../models/Arquivo");
-const serviceAccount = require("../config/firebase-key.json");
+const admin = require('firebase-admin');
+const Salao = require('../models/Salao');
+const Arquivo = require('../models/Arquivo');
+const serviceAccount = require('../config/firebase-key.json');
 
-const BUCKET = "stackhair.appspot.com";
+const BUCKET = 'stackhair.appspot.com';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -23,12 +23,12 @@ module.exports = {
         },
       });
 
-      stream.on("error", (e) => {
+      stream.on('error', (e) => {
         console.log(e);
         return resolve({ error: true, message: e });
       });
 
-      stream.on("finish", async () => {
+      stream.on('finish', async () => {
         // Tornar o arquivo public
         await file.makePublic();
 
@@ -43,9 +43,7 @@ module.exports = {
   },
   deleteFileS3(id) {
     return new Promise((resolve, reject) => {
-      const URL = `${admin.storage().bucket().storage.apiEndpoint}/${
-        admin.storage().bucket().name
-      }/${id}`;
+      const URL = `${admin.storage().bucket().storage.apiEndpoint}/${admin.storage().bucket().name}/${id}`;
 
       console.log(id);
 
@@ -55,8 +53,8 @@ module.exports = {
         .file(id)
         .delete()
         .catch((err) => {
-          console.log("deu erro");
-          resolve({ error: true, message: "Imagem não encontrada" });
+          console.log('deu erro');
+          resolve({ error: true, message: 'Imagem não encontrada' });
         });
 
       console.log(URL);
@@ -69,7 +67,7 @@ module.exports = {
           resolve({ error: false });
         })
         .catch((err) => {
-          console.log("erro ao tentar excluir da tabela");
+          console.log('erro ao tentar excluir da tabela');
           resolve({ error: true, message: err.message });
         });
     });

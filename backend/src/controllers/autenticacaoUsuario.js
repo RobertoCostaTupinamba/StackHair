@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 // Models
-const User = require("../models/User");
+const User = require('../models/User');
 
 module.exports = async (req, res) => {
   const { email, password } = req.body;
@@ -11,25 +11,25 @@ module.exports = async (req, res) => {
 
   // Validação
   if (!email) {
-    errosCamposFaltando.push("O nome é obrigatório");
+    errosCamposFaltando.push('O nome é obrigatório');
   }
 
   if (!password) {
-    errosCamposFaltando.push("O senha é obrigatório");
+    errosCamposFaltando.push('O senha é obrigatório');
   }
 
   // check if user exists
   const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(404).json({ msg: "E-mail ou senha inválida!" });
+    return res.status(404).json({ msg: 'E-mail ou senha inválida!' });
   }
 
   // check password
   const checkPassword = await bcrypt.compare(password, user.password);
 
   if (!checkPassword) {
-    return res.status(422).json({ msg: "E-mail ou senha inválida!" });
+    return res.status(422).json({ msg: 'E-mail ou senha inválida!' });
   }
 
   try {
@@ -41,13 +41,13 @@ module.exports = async (req, res) => {
       },
       secret,
       {
-        expiresIn: "5s", // Expira em 5 segundos
-      }
+        expiresIn: '5s', // Expira em 5 segundos
+      },
     );
 
-    res.status(200).json({ msg: "Autenticado", token });
+    res.status(200).json({ msg: 'Autenticado', token });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msg: "Houve um erro inesperado" });
+    return res.status(500).json({ msg: 'Houve um erro inesperado' });
   }
 };

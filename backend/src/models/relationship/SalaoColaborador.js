@@ -1,24 +1,24 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const timeStamp = require("../../utils/timeStamp");
+const timeStamp = require('../../utils/timeStamp');
 
 const SalaoColaborador = new Schema({
   salaoId: {
     type: mongoose.Types.ObjectId,
-    ref: "Salao",
+    ref: 'Salao',
     required: true,
   },
   colaboradorId: {
     type: mongoose.Types.ObjectId,
-    ref: "Colaborador",
+    ref: 'Colaborador',
     required: true,
   },
   status: {
     type: String,
-    enum: ["A", "I", "E"],
-    default: "A",
+    enum: ['A', 'I', 'E'],
+    default: 'A',
   },
   dataCadastro: {
     type: Date,
@@ -26,4 +26,4 @@ const SalaoColaborador = new Schema({
   },
 });
 
-module.exports = mongoose.model("SalaoColaborador", SalaoColaborador);
+module.exports = mongoose.model('SalaoColaborador', SalaoColaborador);

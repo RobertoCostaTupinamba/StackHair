@@ -1,18 +1,18 @@
-const express = require("express");
+const express = require('express');
 
 const router = express.Router();
 
-const bcrypt = require("bcrypt");
-const turf = require("turf");
-const Salao = require("../models/Salao");
-const Servico = require("../models/Servico");
+const bcrypt = require('bcrypt');
+const turf = require('turf');
+const Salao = require('../models/Salao');
+const Servico = require('../models/Servico');
 
 // Cadastrar o salão
 // Dados esperados:
 // - Nome
 // - E-mail
 // - Senha
-router.post("/register", async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { nome, email, senha, geo } = req.body;
 
@@ -22,17 +22,17 @@ router.post("/register", async (req, res) => {
 
     // Validação
     if (!nome) {
-      errosCamposFaltando.push("O nome é obrigatório");
+      errosCamposFaltando.push('O nome é obrigatório');
     }
 
     if (!email) {
-      errosCamposFaltando.push("O email é obrigatório");
+      errosCamposFaltando.push('O email é obrigatório');
     }
 
     if (!senha) {
-      errosCamposFaltando.push("A senha é obrigatório");
+      errosCamposFaltando.push('A senha é obrigatório');
     } else if (senha.length < 6) {
-      errosCamposFaltando.push("A senha deve ter mais que 5 digitos");
+      errosCamposFaltando.push('A senha deve ter mais que 5 digitos');
     }
 
     if (errosCamposFaltando.length !== 0) {
@@ -43,9 +43,7 @@ router.post("/register", async (req, res) => {
     const userExists = await Salao.findOne({ email });
 
     if (userExists) {
-      return res
-        .status(422)
-        .json({ message: "Por favor, utilize outro e-mail" });
+      return res.status(422).json({ message: 'Por favor, utilize outro e-mail' });
     }
 
     // gerando a senha
@@ -69,18 +67,18 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const { email, senha } = req.body;
 
   const errosCamposFaltando = [];
 
   // Validação
   if (!email) {
-    errosCamposFaltando.push("O nome é obrigatório");
+    errosCamposFaltando.push('O nome é obrigatório');
   }
 
   if (!senha) {
-    errosCamposFaltando.push("A senha é obrigatório");
+    errosCamposFaltando.push('A senha é obrigatório');
   }
 
   if (errosCamposFaltando.length !== 0) {
@@ -91,25 +89,21 @@ router.post("/", async (req, res) => {
   const salao = await Salao.findOne({ email });
 
   if (!salao) {
-    return res
-      .status(404)
-      .json({ error: true, message: "E-mail ou senha inválida!" });
+    return res.status(404).json({ error: true, message: 'E-mail ou senha inválida!' });
   }
 
   // check password
   const checkPassword = await bcrypt.compare(senha, salao.senha);
 
   if (!checkPassword) {
-    return res
-      .status(422)
-      .json({ error: true, msg: "E-mail ou senha inválida!" });
+    return res.status(422).json({ error: true, msg: 'E-mail ou senha inválida!' });
   }
 
   res.json({ salaoId: salao._id });
 });
 
 // Recuperar todos os serviços de um salão
-router.get("/servicos/:salaoId", async (req, res) => {
+router.get('/servicos/:salaoId', async (req, res) => {
   try {
     // Id do salão
     const { salaoId } = req.params;
@@ -118,8 +112,8 @@ router.get("/servicos/:salaoId", async (req, res) => {
     // e retornando o id e o titulo do serviço
     const servicos = await Servico.find({
       salaoId,
-      status: "A",
-    }).select("_id titulo");
+      status: 'A',
+    }).select('_id titulo');
 
     /* [{ label: 'Serviço', value: 122312414}] */
     res.status(200).json({
@@ -130,15 +124,12 @@ router.get("/servicos/:salaoId", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const salao = await Salao.findById(req.params.id);
 
     // DISTANCIA em km
-    const distance = turf.distance(
-      turf.point(salao.geo.coordinates),
-      turf.point([-18.7010522, -47.5599377])
-    );
+    const distance = turf.distance(turf.point(salao.geo.coordinates), turf.point([-18.7010522, -47.5599377]));
 
     res.json({ error: false, salao, distance });
   } catch (err) {

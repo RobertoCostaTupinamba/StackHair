@@ -1,28 +1,28 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const timeStamp = require("../utils/timeStamp");
+const timeStamp = require('../utils/timeStamp');
 
 const Agendamento = new Schema({
   salaoId: {
     type: mongoose.Types.ObjectId,
-    ref: "Salao",
+    ref: 'Salao',
     required: true,
   },
   clienteId: {
     type: mongoose.Types.ObjectId,
-    ref: "Cliente",
+    ref: 'Cliente',
     required: true,
   },
   servicoId: {
     type: mongoose.Types.ObjectId,
-    ref: "Servico",
+    ref: 'Servico',
     required: true,
   },
   colaboradorId: {
     type: mongoose.Types.ObjectId,
-    ref: "Colaborador",
+    ref: 'Colaborador',
     required: true,
   },
   data: {
@@ -43,4 +43,4 @@ const Agendamento = new Schema({
   },
 });
 
-module.exports = mongoose.model("Agendamento", Agendamento);
+module.exports = mongoose.model('Agendamento', Agendamento);

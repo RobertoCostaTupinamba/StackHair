@@ -1,15 +1,15 @@
-const express = require("express");
-const mongoose = require("mongoose");
+const express = require('express');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 
-const Colaborador = require("../models/Colaborador");
-const Salao = require("../models/Salao");
-const SalaoColaborador = require("../models/relationship/SalaoColaborador");
-const ColaboradorServico = require("../models/relationship/ColaboradorServico");
+const Colaborador = require('../models/Colaborador');
+const Salao = require('../models/Salao');
+const SalaoColaborador = require('../models/relationship/SalaoColaborador');
+const ColaboradorServico = require('../models/relationship/ColaboradorServico');
 
 // Rota de cadastrar colaborador
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const db = mongoose.connection;
   const session = await db.startSession();
   session.startTransaction();
@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
     if (!existeSalao) {
       await session.abortTransaction();
       session.endSession();
-      return res.status(400).json({ error: true, message: "Salão não existe" });
+      return res.status(400).json({ error: true, message: 'Salão não existe' });
     }
 
     // verificar se o colaborador existe
@@ -41,16 +41,14 @@ router.post("/", async (req, res) => {
 
     // Relacionamento
 
-    const colaboradorId = existeColaborador
-      ? existeColaborador._id
-      : newColaborador._id;
+    const colaboradorId = existeColaborador ? existeColaborador._id : newColaborador._id;
 
     // Verifica se existe relacionamento entre salão e colaborador
 
     const existentRelationship = await SalaoColaborador.findOne({
       salaoId,
       colaboradorId,
-      status: { $ne: "E" },
+      status: { $ne: 'E' },
     });
 
     // Se não estiver vinculado
@@ -70,7 +68,7 @@ router.post("/", async (req, res) => {
           colaboradorId,
         },
         { status: colaborador.vinculo },
-        { session }
+        { session },
       );
     }
 
@@ -81,15 +79,15 @@ router.post("/", async (req, res) => {
           servicoId,
           colaboradorId,
         }),
-        { session }
-      )
+        { session },
+      ),
     );
 
     await session.commitTransaction();
     session.endSession();
 
     if (existeColaborador && existentRelationship) {
-      res.json({ error: true, message: "Colaborador já cadastrado" });
+      res.json({ error: true, message: 'Colaborador já cadastrado' });
     } else {
       res.json({ error: false });
     }
@@ -101,21 +99,18 @@ router.post("/", async (req, res) => {
 });
 
 // Pode ser que teremos que mudar esta rota pra dentro de salão
-router.put("/:colaboradorId", async (req, res) => {
+router.put('/:colaboradorId', async (req, res) => {
   try {
     const { vinculo, vinculoId, especialidades } = req.body;
     const { colaboradorId } = req.params;
 
     // Vinculo
-    const salaoColaborador = await SalaoColaborador.findByIdAndUpdate(
-      vinculoId,
-      { status: vinculo }
-    );
+    const salaoColaborador = await SalaoColaborador.findByIdAndUpdate(vinculoId, { status: vinculo });
 
     if (!salaoColaborador) {
       return res.status(404).json({
         error: true,
-        message: "O vinculo entre salão e colaborador não foi encontrada",
+        message: 'O vinculo entre salão e colaborador não foi encontrada',
       });
     }
 
@@ -127,7 +122,7 @@ router.put("/:colaboradorId", async (req, res) => {
     if (colaborServico.deletedCount === 0) {
       return res.status(404).json({
         error: true,
-        message: "O vinculo entre colaborador e serviço não foi encontrada",
+        message: 'O vinculo entre colaborador e serviço não foi encontrada',
       });
     }
 
@@ -135,14 +130,13 @@ router.put("/:colaboradorId", async (req, res) => {
       especialidades.map((servicoId) => ({
         servicoId,
         colaboradorId,
-      }))
+      })),
     );
 
     if (!colaborServicoCreate) {
       return res.status(500).json({
         error: true,
-        message:
-          "Houve um erro interno no servidor ao tentar cadastrar a relação entre colaborador e serviço",
+        message: 'Houve um erro interno no servidor ao tentar cadastrar a relação entre colaborador e serviço',
       });
     }
 
@@ -152,17 +146,14 @@ router.put("/:colaboradorId", async (req, res) => {
   }
 });
 
-router.delete("/vinculo/:id", async (req, res) => {
+router.delete('/vinculo/:id', async (req, res) => {
   try {
-    const salaoColaborador = await SalaoColaborador.findByIdAndUpdate(
-      req.params.id,
-      { status: "E" }
-    );
+    const salaoColaborador = await SalaoColaborador.findByIdAndUpdate(req.params.id, { status: 'E' });
 
     if (!salaoColaborador) {
       return res.status(404).json({
         error: true,
-        message: "O vinculo entre salão e colaborador não foi encontrada",
+        message: 'O vinculo entre salão e colaborador não foi encontrada',
       });
     }
 
@@ -174,7 +165,7 @@ router.delete("/vinculo/:id", async (req, res) => {
   }
 });
 
-router.post("/filter", async (req, res) => {
+router.post('/filter', async (req, res) => {
   try {
     const colaboradores = await Colaborador.find(req.body.filters, {
       senha: 0,
@@ -187,7 +178,7 @@ router.post("/filter", async (req, res) => {
   }
 });
 
-router.get("/salao/:salaoId", async (req, res) => {
+router.get('/salao/:salaoId', async (req, res) => {
   try {
     const { salaoId } = req.params;
     const listaColaboradores = [];
@@ -195,10 +186,10 @@ router.get("/salao/:salaoId", async (req, res) => {
     // Recuperar vinculos
     const salaoColaboradores = await SalaoColaborador.find({
       salaoId,
-      status: { $ne: "E" },
+      status: { $ne: 'E' },
     })
-      .populate("colaboradorId", { senha: 0, __v: 0 })
-      .select("colaboradorId dataCadastro status");
+      .populate('colaboradorId', { senha: 0, __v: 0 })
+      .select('colaboradorId dataCadastro status');
 
     for (const vinculo of salaoColaboradores) {
       const especialidades = await ColaboradorServico.find({

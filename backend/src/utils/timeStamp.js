@@ -7,8 +7,8 @@ const timeStamp = new Date(
     current.getHours(),
     current.getMinutes(),
     current.getSeconds(),
-    current.getMilliseconds()
-  )
+    current.getMilliseconds(),
+  ),
 );
 
 module.exports = timeStamp;
