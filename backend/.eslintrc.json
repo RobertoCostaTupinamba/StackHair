@@ -19,6 +19,9 @@
     "prettier"
   ],
   "rules": {
+    // "radix":"off",
+    "no-plusplus":"off",
+    "no-loop-func": "off",
     "no-console":"off",
     "func-names":"off",
     "no-await-in-loop":"off",

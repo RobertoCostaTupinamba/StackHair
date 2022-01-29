@@ -28,6 +28,7 @@ app.use('/servico', Multer.any(), require('./src/routes/servico.routes'));
 app.use('/horario', require('./src/routes/horario.routes'));
 app.use('/colaborador', require('./src/routes/colaborador.routes'));
 app.use('/cliente', require('./src/routes/cliente.routes'));
+app.use('/agendamento', require('./src/routes/agendamento.routes'));
 
 // Private Route
 app.get('/users', require('./src/middlewares/checkToken'), require('./src/controllers/buscarUsuario'));

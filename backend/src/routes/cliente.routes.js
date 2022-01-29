@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 const Cliente = require('../models/Cliente');
-const Salao = require('../models/Salao');
 const SalaoCliente = require('../models/relationship/SalaoCliente');
 
 router.post('/', async (req, res) => {
