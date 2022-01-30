@@ -3,19 +3,25 @@ const mongoose = require('mongoose');
 
 const router = express.Router();
 
+const { uploadToS3, deleteFileS3 } = require('../services/firebase');
 const Colaborador = require('../models/Colaborador');
 const Salao = require('../models/Salao');
 const SalaoColaborador = require('../models/relationship/SalaoColaborador');
 const ColaboradorServico = require('../models/relationship/ColaboradorServico');
+const Arquivo = require('../models/Arquivo');
 
 // Rota de cadastrar colaborador
 router.post('/', async (req, res) => {
   const db = mongoose.connection;
+  const urlArquivos = [];
+  const errors = [];
+
   const session = await db.startSession();
   session.startTransaction();
 
   try {
-    const { colaborador, salaoId } = req.body;
+    const { salaoId } = req.body;
+    const colaborador = JSON.parse(req.body.colaborador);
     let newColaborador = null;
 
     // verificar se o salão existe
@@ -39,9 +45,41 @@ router.post('/', async (req, res) => {
       }).save({ session });
     }
 
+    if (errors.length > 0) {
+      res.json(errors);
+      return false;
+    }
+
     // Relacionamento
 
     const colaboradorId = existeColaborador ? existeColaborador._id : newColaborador._id;
+
+    // Upload de imagem
+    if (req.files.length !== 0) {
+      for (const [i, key] of Object.keys(req.files).entries()) {
+        const imagem = req.files[key];
+
+        const nameParts = imagem.originalname.split('.');
+        const fileName = `${new Date().getTime()}.${nameParts[nameParts.length - 1]}`;
+        const path = `colaborador/${salaoId}/${fileName}`;
+
+        const response = await uploadToS3(imagem, path);
+
+        if (response.error) {
+          errors.push({ error: true, message: response.message.message });
+        } else {
+          urlArquivos.push(response.message);
+        }
+      }
+
+      // CRIAR ARQUIVO
+      const arquivos = urlArquivos.map((arquivo) => ({
+        referenciaId: colaboradorId,
+        model: 'Colaborador',
+        arquivo,
+      }));
+      await new Arquivo(...arquivos).save({ session });
+    }
 
     // Verifica se existe relacionamento entre salão e colaborador
 
@@ -115,16 +153,9 @@ router.put('/:colaboradorId', async (req, res) => {
     }
 
     // Especialidades
-    const colaborServico = await ColaboradorServico.deleteMany({
+    await ColaboradorServico.deleteMany({
       colaboradorId,
     });
-
-    if (colaborServico.deletedCount === 0) {
-      return res.status(404).json({
-        error: true,
-        message: 'O vinculo entre colaborador e serviço não foi encontrada',
-      });
-    }
 
     const colaborServicoCreate = await ColaboradorServico.insertMany(
       especialidades.map((servicoId) => ({
@@ -141,6 +172,85 @@ router.put('/:colaboradorId', async (req, res) => {
     }
 
     res.json({ error: false });
+  } catch (err) {
+    res.json({ error: true, message: err.message });
+  }
+});
+
+router.put('/:colaboradorId/image', async (req, res) => {
+  try {
+    const { salaoId, id, referenciaId } = req.body;
+    const { colaboradorId } = req.params;
+    const urlArquivos = [];
+    const errors = [];
+
+    // verificar se o salão existe
+    const existeSalao = await Salao.findOne({ salaoId });
+
+    if (!existeSalao) {
+      return res.status(404).json({ error: true, message: 'Salão não existe' });
+    }
+
+    // verificar se o colaborador existe
+    const colaborador = await Colaborador.findOne(
+      {
+        colaboradorId,
+      },
+      { senha: 0 },
+    );
+
+    if (!colaborador) {
+      return res.status(404).json({ error: true, message: 'Colaborador não encontrado' });
+    }
+
+    if (id && referenciaId) {
+      const deletedArquivo = await Arquivo.findByIdAndDelete(referenciaId);
+
+      if (!deletedArquivo) {
+        return res.status(404).json({ error: true, message: 'O arquivo não foi encrontado no banco para excluir' });
+      }
+
+      const response = await deleteFileS3(id);
+      if (response.error) {
+        return res.status(404).json({ error: true, message: response.message });
+      }
+    }
+
+    // Upload de imagem
+    if (req.files.length !== 0) {
+      for (const [i, key] of Object.keys(req.files).entries()) {
+        const imagem = req.files[key];
+
+        const nameParts = imagem.originalname.split('.');
+        const fileName = `${new Date().getTime()}.${nameParts[nameParts.length - 1]}`;
+        const path = `colaborador/${salaoId}/${fileName}`;
+
+        const response = await uploadToS3(imagem, path);
+
+        if (response.error) {
+          errors.push({ error: true, message: response.message.message });
+        } else {
+          urlArquivos.push(response.message);
+        }
+      }
+
+      // CRIAR ARQUIVO
+      const arquivos = urlArquivos.map((arquivo) => ({
+        referenciaId: colaborador.colaboradorId,
+        model: 'Colaborador',
+        arquivo,
+      }));
+
+      await new Arquivo(...arquivos).save();
+
+      colaborador.foto = arquivos[0].arquivo;
+
+      colaborador.save();
+
+      return res.json({ error: false, colaborador, message: 'Imagem atualizada' });
+    }
+
+    return res.status(400).json({ error: true, message: 'Imgem não eviada' });
   } catch (err) {
     res.json({ error: true, message: err.message });
   }

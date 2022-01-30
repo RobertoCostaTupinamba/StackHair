@@ -1,16 +1,24 @@
+import { useSelector } from 'react-redux'
+
 const Header = () => {
-    return (
-        <header className="container-fluid d-flex justify-content-end">
-            <div className="d-flex align-items-center">
-                <div>
-                    <span className="d-block m-0 p-0 text-white">Barbearia X</span>
-                    <small className="m-0 p-0">Plano gold</small>
-                </div>
-                <img alt="Logo da barbearia" src="https://img.freepik.com/vetores-gratis/logotipo-do-polo-de-barbeiro_1415-673.jpg?size=338&ext=jpg" />
-                <span className="mdi mdi-chevron-down text-white"></span>
-            </div>
-        </header>
-    )
+  let { nome, email, foto } = useSelector((state) => state.user);
+
+  return (
+    <header className="container-fluid d-flex justify-content-end">
+      <div className="d-flex align-items-center">
+        <div>
+          <span className="d-block m-0 p-0 text-white">{nome && nome || ''}</span>
+          <small className="m-0 p-0">{email && email || ''}</small>
+        </div>
+        {foto !== null ?
+          <img alt="Logo da barbearia" src={`${foto}`} />
+          : <img alt="Logo da barbearia" src="https://firebasestorage.googleapis.com/v0/b/stackhair.appspot.com/o/default.jpg?alt=media&token=05b7c349-038e-4dca-a1d9-88ae90ea749a" />
+        }
+
+        <span className="mdi mdi-chevron-down text-white"></span>
+      </div>
+    </header>
+  )
 }
 
 export default Header;

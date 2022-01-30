@@ -6,6 +6,6 @@ import agendamento from './modules/agendamento/reducer'
 
 
 export default combineReducers({
-    user,
-    agendamento
+  user,
+  agendamento
 })

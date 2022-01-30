@@ -2,7 +2,7 @@ import { useRef, useCallback } from 'react';
 import { Container, Content, Background } from './styles';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import getValidationError from '../../utils/getValidationErros'
+import util from '../../utils/utils'
 
 import logo from '../../assets/logo.png';
 
@@ -31,7 +31,7 @@ const TelaCadastro = () => {
 
             console.log(data);
         } catch (err) {
-            const errors = getValidationError(err)
+            const errors = util.getValidationError(err)
             formRef.current?.setErrors(errors)
         }
     }, [])

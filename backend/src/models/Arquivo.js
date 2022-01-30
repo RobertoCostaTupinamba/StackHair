@@ -14,7 +14,7 @@ const Arquivo = new Schema({
   model: {
     type: String,
     required: true,
-    enum: ['Servico', 'Salao'],
+    enum: ['Servico', 'Salao', 'Colaborador'],
   },
   arquivo: {
     type: String,

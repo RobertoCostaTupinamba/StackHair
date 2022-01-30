@@ -192,7 +192,7 @@ router.post('/delete-arquivo', async (req, res) => {
       return res.status(404).json({ error: true, message: response.message });
     }
 
-    res.json({ error: false, message: 'Arquivo deletado' });
+    return res.json({ error: false, message: 'Arquivo deletado' });
   } catch (err) {
     return res.status(422).json({ error: true, message: err.message });
   }

@@ -89,7 +89,7 @@ router.post('/', async (req, res) => {
   const salao = await Salao.findOne({ email });
 
   if (!salao) {
-    return res.status(404).json({ error: true, message: 'E-mail ou senha inválida!' });
+    return res.json({ error: true, message: 'E-mail ou senha inválida!' });
   }
 
   // check password
@@ -99,7 +99,7 @@ router.post('/', async (req, res) => {
     return res.status(422).json({ error: true, msg: 'E-mail ou senha inválida!' });
   }
 
-  res.json({ salaoId: salao._id });
+  res.json({ salaoId: salao._id, nome: salao.nome, email: salao.email, foto: null });
 });
 
 // Recuperar todos os serviços de um salão
@@ -126,7 +126,7 @@ router.get('/servicos/:salaoId', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const salao = await Salao.findById(req.params.id);
+    const salao = await Salao.findById(req.params.id, { senha: 0 });
 
     // DISTANCIA em km
     const distance = turf.distance(turf.point(salao.geo.coordinates), turf.point([-18.7010522, -47.5599377]));
