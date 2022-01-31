@@ -1,5 +1,5 @@
 import produce from 'immer';
-import types from "./types";
+import types from './types';
 //Reducer contem estados (state) globais
 const INITIAL_STATE = {
   logado: false,
@@ -7,8 +7,7 @@ const INITIAL_STATE = {
   nome: null,
   email: null,
   foto: null,
-}
-
+};
 
 function user(state = INITIAL_STATE, action) {
   switch (action.type) {

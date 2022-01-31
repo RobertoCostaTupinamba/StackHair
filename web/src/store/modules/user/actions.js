@@ -1,4 +1,4 @@
-import types from "./types";
+import types from './types';
 
 export function autenticarUsuario(dadosDoUsuario) {
   return { type: types.AUTENTICAR_USUARIO, dadosDoUsuario };

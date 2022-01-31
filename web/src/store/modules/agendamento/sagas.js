@@ -1,12 +1,10 @@
-import { takeLatest, all, call, put, select } from 'redux-saga/effects';
+import { takeLatest, all, call, put } from 'redux-saga/effects';
 import { updateAgendamento } from './actions';
 import types from './types';
 import api from '../../../services/api';
-import { useSelector } from 'react-redux';
 
 export function* filterAgenramentos({ range }) {
   try {
-
     const { data: res } = yield call(api.post, '/agendamento/filter', {
       salaoId: sessionStorage.getItem('salaoId'),
       periodo: range,
@@ -36,6 +34,4 @@ export function* filterAgenramentos({ range }) {
   }
 }
 
-export default all(
-  [takeLatest(types.FILTER_AGENDAMENTOS, filterAgenramentos)]
-);
+export default all([takeLatest(types.FILTER_AGENDAMENTOS, filterAgenramentos)]);

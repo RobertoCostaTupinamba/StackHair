@@ -1,4 +1,4 @@
-import { Container } from "./styles";
+import { Container } from './styles';
 
 const Tooltip = ({ title, className, children }) => {
   return (
@@ -7,6 +7,6 @@ const Tooltip = ({ title, className, children }) => {
       {children}
     </Container>
   );
-}
+};
 
 export default Tooltip;
