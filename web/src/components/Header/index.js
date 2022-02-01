@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 const Header = () => {
   let { nome, email, foto } = useSelector((state) => state.user);
 
+  const fotoSalao = foto == 'null';
   return (
     <header className="container-fluid d-flex justify-content-end">
       <div className="d-flex align-items-center">
@@ -10,7 +11,7 @@ const Header = () => {
           <span className="d-block m-0 p-0 text-white">{(nome && nome) || ''}</span>
           <small className="m-0 p-0">{(email && email) || ''}</small>
         </div>
-        {foto !== null ? (
+        {fotoSalao === false ? (
           <img alt="Logo da barbearia" src={`${foto}`} />
         ) : (
           <img
