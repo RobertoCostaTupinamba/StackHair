@@ -2,9 +2,9 @@ import { Table } from 'rsuite';
 const { Column, HeaderCell, Cell } = Table;
 import 'rsuite/Button/styles/index.less';
 
-const TableComponent = ({ data, config, actions, onRowClick }) => {
+const TableComponent = ({ data, config, actions, onRowClick, loading }) => {
   return (
-    <Table height={400} data={data} onRowClick={(item) => onRowClick(item)}>
+    <Table loading={loading} height={400} data={data} onRowClick={(item) => onRowClick(item)}>
       {config.map((c) => (
         <Column flexGrow={!c.width ? 1 : 0} width={c.width} align="center" key={c.key} fixed={c.fixed}>
           <HeaderCell>{c.label}</HeaderCell>

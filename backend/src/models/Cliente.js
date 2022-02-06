@@ -42,11 +42,17 @@ const Cliente = new Schema({
     uf: String,
     cep: String,
     numero: String,
+    logradouro: String,
     pais: String,
   },
   geo: {
-    tipo: String,
-    coordinates: Array,
+    coordinates: {
+      type: [Number],
+    },
+    type: {
+      type: String, // Don't do `{ location: { type: String } }`
+      enum: ['Point'], // 'location.type' must be 'Point'
+    },
   },
   status: {
     type: String,

@@ -2,13 +2,18 @@ import { all, takeLatest, put, call } from 'redux-saga/effects';
 import api from '../../../services/api';
 import { usuarioAutenticado } from './actions';
 import types from './types';
+import { notification } from '../../../services/rsuite';
 
 export function* loginUsuario({ dadosDoUsuario }) {
   try {
     const { data: res } = yield call(api.post, '/salao', dadosDoUsuario);
 
     if (res.error) {
-      alert(res.message);
+      notification('error', {
+        placement: 'topStart',
+        title: 'Ops...',
+        description: res.message,
+      });
       return false;
     }
 
@@ -26,7 +31,11 @@ export function* loginUsuario({ dadosDoUsuario }) {
       }),
     );
   } catch (err) {
-    alert(err.message);
+    notification('error', {
+      placement: 'topStart',
+      title: 'Ops...',
+      description: err.message,
+    });
   }
 }
 

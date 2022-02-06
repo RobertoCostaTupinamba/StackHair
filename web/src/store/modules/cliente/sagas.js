@@ -5,13 +5,19 @@ import api from '../../../services/api';
 import { notification } from '../../../services/rsuite';
 // import consts from '../../../consts';
 
-export function* filterCliente({ filters }) {
-  const { form } = yield select((state) => state.cliente);
+// FILTER CLIENTE
+export function* filterCliente() {
+  const { form, cliente } = yield select((state) => state.cliente);
 
   try {
     yield put(updateCliente({ form: { ...form, filtering: true } }));
 
-    const { data: res } = yield call(api.post, '/cliente/filter', filters);
+    const { data: res } = yield call(api.post, '/cliente/filter', {
+      filters: {
+        email: cliente.email,
+        status: 'A',
+      },
+    });
     yield put(updateCliente({ form: { ...form, filtering: false } }));
 
     if (res.error) {
@@ -51,15 +57,17 @@ export function* filterCliente({ filters }) {
   }
 }
 
+//ADICIONAR CLIENTE
 export function* addCliente() {
+  const { cliente, form, components } = yield select((state) => state.cliente);
   try {
-    const { cliente, form, components } = yield select((state) => state.cliente);
     yield put(updateCliente({ form: { ...form, saving: true } }));
 
     const { data: res } = yield call(api.post, '/cliente', {
       cliente,
       salaoId: sessionStorage.getItem('salaoId'),
     });
+
     yield put(updateCliente({ form: { ...form, saving: false } }));
 
     if (res.error) {
@@ -82,6 +90,7 @@ export function* addCliente() {
       description: 'Cliente salvo com sucesso!',
     });
   } catch (err) {
+    yield put(updateCliente({ form: { ...form, saving: false } }));
     notification('error', {
       placement: 'topStart',
       title: 'Ops...',
@@ -90,14 +99,15 @@ export function* addCliente() {
   }
 }
 
+// PEGAR TODOS OS CLIENTES DE UM SALÃO
 export function* allClientes() {
-  // const { form } = yield select((state) => state.clientes);
+  const { form } = yield select((state) => state.cliente);
 
   try {
-    // yield put(updateCliente({ form: { ...form, filtering: true } }));
+    yield put(updateCliente({ form: { ...form, filtering: true } }));
 
     const { data: res } = yield call(api.get, `/cliente/salao/${sessionStorage.getItem('salaoId')}`);
-    // yield put(updateCliente({ form: { ...form, filtering: false } }));
+    yield put(updateCliente({ form: { ...form, filtering: false } }));
 
     if (res.error) {
       // ALERT DO RSUITE
@@ -112,7 +122,7 @@ export function* allClientes() {
     yield put(updateCliente({ clientes: res.clientes }));
   } catch (err) {
     // COLOCAR AQUI O ALERT DO RSUITE
-    // yield put(updateCliente({ form: { ...form, filtering: false } }));
+    yield put(updateCliente({ form: { ...form, filtering: false } }));
     notification('error', {
       placement: 'topStart',
       title: 'Ops...',
@@ -121,6 +131,7 @@ export function* allClientes() {
   }
 }
 
+// REMOVER CLIENTE DE UM SALÃO
 export function* unlinkCliente() {
   const { form, components, cliente } = yield select((state) => state.cliente);
 
@@ -152,9 +163,10 @@ export function* unlinkCliente() {
         components: { ...components, drawer: false, confirmDelete: false },
       }),
     );
+    yield put(resetCliente());
   } catch (err) {
     // COLOCAR AQUI O ALERT DO RSUITE
-    yield put(updateCliente({ form: { ...form, saving: false } }));
+    yield put(updateCliente({ form: { ...form, saving: false, confirmDelete: false } }));
     notification('error', {
       placement: 'topStart',
       title: 'Ops...',

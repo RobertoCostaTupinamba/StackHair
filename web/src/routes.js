@@ -34,7 +34,16 @@ const Rotas = () => {
       {logado ? (
         <Routes>
           <Route path="*" element={<NotFound />} />
-          <Route path="/" element={<Navigate to="/agendamentos" />} />
+          <Route
+            path="/"
+            element={
+              sessionStorage.getItem('page') === 'cliente' ? (
+                <Navigate to="/clientes" />
+              ) : (
+                <Navigate to="/agendamentos" />
+              )
+            }
+          />
           <Route path="/agendamentos" element={<Agendamentos />} />
           <Route path="/clientes" element={<Clientes />} />
         </Routes>

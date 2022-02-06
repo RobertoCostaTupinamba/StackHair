@@ -26,6 +26,7 @@ const INITIAL_STATE = {
       numero: '',
       pais: 'BR',
     },
+    geo: {},
   },
   clientes: [],
 };

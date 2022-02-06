@@ -63,6 +63,7 @@ const Agendamentos = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
+    sessionStorage.setItem('page', 'agendamentos');
     dispatch(
       filterAgendamentos({
         inicio: moment().weekday(0).format('YYYY-MM-DD'),

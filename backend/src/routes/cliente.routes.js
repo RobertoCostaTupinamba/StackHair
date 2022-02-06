@@ -1,19 +1,61 @@
+const axios = require('axios');
 const express = require('express');
 const mongoose = require('mongoose');
 
 const router = express.Router();
 
 const Cliente = require('../models/Cliente');
+const ApiGoogle = require('../models/ApiGoogle');
 const SalaoCliente = require('../models/relationship/SalaoCliente');
 
 router.post('/', async (req, res) => {
   const db = mongoose.connection;
   const session = await db.startSession();
   session.startTransaction();
+  let geo;
 
   try {
     const { cliente, salaoId } = req.body;
     let newCliente = null;
+    let apiGoogle = await ApiGoogle.find();
+
+    if (cliente.endereco.logradouro && cliente.endereco.cidade && cliente.endereco.numero) {
+      if (apiGoogle.length === 0) {
+        apiGoogle = await new ApiGoogle().save();
+      }
+
+      if (apiGoogle[0].contador !== 990) {
+        apiGoogle[0].contador += 1;
+
+        const apiKey = process.env.API_KEY;
+        const endereco = `${cliente.endereco.logradouro
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, '+')}+${cliente.endereco.numero.replace(/\s+/g, '+')}+${cliente.endereco.cidade
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, '+')}`;
+
+        const response = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${endereco}&key=${apiKey}`,
+        );
+
+        geo = {
+          type: 'Point',
+          coordinates: [response.data.results[0].geometry.location.lat, response.data.results[0].geometry.location.lng],
+        };
+
+        await apiGoogle[0].save();
+      } else {
+        await session.abortTransaction();
+        session.endSession();
+        res.json({ error: true, message: 'API de geolocalização está quase no limite' });
+      }
+    } else {
+      await session.abortTransaction();
+      session.endSession();
+      res.json({ error: true, message: 'Existem campos faltando' });
+    }
 
     // verificar se o cliente existe
     const existeCliente = await Cliente.findOne({
@@ -24,6 +66,7 @@ router.post('/', async (req, res) => {
     if (!existeCliente) {
       newCliente = await new Cliente({
         ...cliente,
+        geo,
       }).save({ session });
     }
 
@@ -48,7 +91,7 @@ router.post('/', async (req, res) => {
     }
 
     // Se o vinculo entre cliente e salão ja existir
-    if (existentRelationship) {
+    if (existentRelationship && existentRelationship.status === 'I') {
       await SalaoCliente.findOneAndUpdate(
         {
           salaoId,
@@ -94,18 +137,20 @@ router.get('/salao/:salaoId', async (req, res) => {
     // Recuperar vinculos
     const clientes = await SalaoCliente.find({
       salaoId,
-      status: { $ne: 'E' },
+      status: 'A',
     })
       .populate('clienteId')
       .select('clienteId dataCadastro');
 
     return res.json({
       error: false,
-      clientes: clientes.map((vinculo) => ({
-        ...vinculo.clienteId._doc,
-        vinculoId: vinculo._id,
-        dataCadastro: vinculo.dataCadastro,
-      })),
+      clientes: clientes.map((vinculo) => {
+        return {
+          ...vinculo.clienteId._doc,
+          vinculoId: vinculo._id,
+          dataCadastro: vinculo.dataCadastro,
+        };
+      }),
     });
   } catch (err) {
     res.json({ error: true, message: err.message });

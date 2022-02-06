@@ -1,7 +1,7 @@
 import types from './types';
 
-export function filterCliente(filters) {
-  return { type: types.FILTER_CLIENTE, filters };
+export function filterCliente() {
+  return { type: types.FILTER_CLIENTE };
 }
 
 export function updateCliente(payload) {
