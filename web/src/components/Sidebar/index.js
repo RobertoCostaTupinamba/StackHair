@@ -20,6 +20,12 @@ const Sidebar = () => {
             <p>Clientes</p>
           </Link>
         </li>
+        <li>
+          <Link to="/colaboradores" className={pathname.toLowerCase() === '/colaboradores' ? 'active' : ''}>
+            <span className="mdi mdi-card-account-details-outline" />
+            <p>Colaboradores</p>
+          </Link>
+        </li>
       </ul>
     </aside>
   );

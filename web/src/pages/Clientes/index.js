@@ -12,7 +12,8 @@ import {
 } from '../../store/modules/cliente/actions';
 import moment from 'moment';
 import Table from '../../components/Table';
-import { Button, Drawer, Notification, Modal } from 'rsuite';
+import { Button, Drawer, Modal } from 'rsuite';
+import { notification } from '../../services/rsuite';
 import RemindFillIcon from '@rsuite/icons/RemindFill';
 import util from '../../utils/utils';
 import 'rsuite/dist/rsuite.min.css';
@@ -50,7 +51,7 @@ const Clientes = () => {
   const save = () => {
     if (!util.allFields(cliente, ['email', 'nome', 'telefone', 'dataNascimento', 'sexo'])) {
       // DISPARAR O ALERTA
-      Notification.error({
+      notification('error', {
         placement: 'topStart',
         title: 'Calma lá!',
         description: 'Antes de prosseguir, preencha todos os campos!',
@@ -89,7 +90,7 @@ const Clientes = () => {
   // };
 
   useEffect(() => {
-    sessionStorage.setItem('page', 'cliente');
+    sessionStorage.setItem('page', 'clientes');
     dispatch(allClientes());
   }, [dispatch]);
 
@@ -107,7 +108,7 @@ const Clientes = () => {
           }}
         >
           <Drawer.Body>
-            <h3>{behavior === 'create' ? 'Criar novo ' : 'Atualizar '}cliente</h3>
+            <h3>{behavior === 'create' ? 'Criar novo ' : 'Remover '}cliente</h3>
             <div className="row mt-3">
               <div className="form-group mb-3 col-12">
                 <b>E-mail</b>
@@ -116,7 +117,7 @@ const Clientes = () => {
                     type="email"
                     className="form-control"
                     placeholder="E-mail do cliente"
-                    disabled={behavior !== 'create'}
+                    disabled={behavior == 'update'}
                     onChange={(e) => {
                       setCliente('email', e.target.value);
                     }}

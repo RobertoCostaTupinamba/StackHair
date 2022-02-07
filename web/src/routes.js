@@ -11,6 +11,7 @@ import Clientes from './pages/Clientes';
 import TelaLogin from './pages/Login';
 import NotFound from './pages/NotFound';
 import TelaCadastro from './pages/Cadastro';
+import Colaboradores from './pages/Colaboradores';
 
 const Rotas = () => {
   let { logado } = useSelector((state) => state.user);
@@ -37,15 +38,14 @@ const Rotas = () => {
           <Route
             path="/"
             element={
-              sessionStorage.getItem('page') === 'cliente' ? (
-                <Navigate to="/clientes" />
-              ) : (
-                <Navigate to="/agendamentos" />
-              )
+              <Navigate
+                to={`/${sessionStorage.getItem('page') === null ? 'Agendamentos' : sessionStorage.getItem('page')}`}
+              />
             }
           />
           <Route path="/agendamentos" element={<Agendamentos />} />
           <Route path="/clientes" element={<Clientes />} />
+          <Route path="/colaboradores" element={<Colaboradores />} />
         </Routes>
       ) : (
         <>
