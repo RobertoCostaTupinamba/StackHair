@@ -306,7 +306,10 @@ router.get('/salao/:salaoId', async (req, res) => {
         colaboradorId: vinculo.colaboradorId._id,
       });
 
-      listaColaboradores.push({ ...vinculo._doc, especialidades });
+      listaColaboradores.push({
+        ...vinculo._doc,
+        especialidades: especialidades.map((especialidade) => especialidade.servicoId),
+      });
     }
 
     return res.json({
