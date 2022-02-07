@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 
   try {
     const { salaoId } = req.body;
-    const colaborador = JSON.parse(req.body.colaborador);
+    const { colaborador } = req.body;
     let newColaborador = null;
 
     // verificar se o salão existe
@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
     const colaboradorId = existeColaborador ? existeColaborador._id : newColaborador._id;
 
     // Upload de imagem
-    if (req.files.length !== 0) {
+    if (req.files && req.files.length !== 0) {
       for (const [i, key] of Object.keys(req.files).entries()) {
         const imagem = req.files[key];
 
