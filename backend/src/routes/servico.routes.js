@@ -170,11 +170,11 @@ router.get('/salao/:salaoId', async (req, res) => {
       servicosSalao.push({ ...servico._doc, arquivos });
     }
 
-    res.json({
+    return res.status(200).json({
       servicos: servicosSalao,
     });
   } catch (err) {
-    res.json({ error: true, message: err.message });
+    return res.json({ error: true, message: err.message });
   }
 });
 

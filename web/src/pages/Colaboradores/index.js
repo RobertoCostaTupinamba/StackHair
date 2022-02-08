@@ -57,20 +57,6 @@ const Colaboradores = () => {
     );
   };
 
-  // const save = () => {
-  //   if (!util.allFields(colaborador, ['email', 'nome', 'telefone', 'dataNascimento', 'sexo'])) {
-  //     // DISPARAR O ALERTA
-  //     Notification.error({
-  //       placement: 'topStart',
-  //       title: 'Calma lá!',
-  //       description: 'Antes de prosseguir, preencha todos os campos!',
-  //     });
-  //     return false;
-  //   }
-
-  //   dispatch(addColaborador());
-  // };
-
   const remove = () => {
     // PERFORM REMOVE
     dispatch(unlinkColaborador());

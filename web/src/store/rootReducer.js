@@ -5,10 +5,12 @@ import user from './modules/user/reducer';
 import agendamento from './modules/agendamento/reducer';
 import cliente from './modules/cliente/reducer';
 import colaborador from './modules/colaborador/reducer';
+import servico from './modules/servico/reducer';
 
 export default combineReducers({
   user,
   agendamento,
   cliente,
   colaborador,
+  servico,
 });

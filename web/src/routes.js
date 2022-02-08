@@ -12,6 +12,7 @@ import TelaLogin from './pages/Login';
 import NotFound from './pages/NotFound';
 import TelaCadastro from './pages/Cadastro';
 import Colaboradores from './pages/Colaboradores';
+import Servicos from './pages/Servicos';
 
 const Rotas = () => {
   let { logado } = useSelector((state) => state.user);
@@ -46,6 +47,7 @@ const Rotas = () => {
           <Route path="/agendamentos" element={<Agendamentos />} />
           <Route path="/clientes" element={<Clientes />} />
           <Route path="/colaboradores" element={<Colaboradores />} />
+          <Route path="/servicos" element={<Servicos />} />
         </Routes>
       ) : (
         <>

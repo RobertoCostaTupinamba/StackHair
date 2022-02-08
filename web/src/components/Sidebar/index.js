@@ -26,6 +26,12 @@ const Sidebar = () => {
             <p>Colaboradores</p>
           </Link>
         </li>
+        <li>
+          <Link to="/servicos" className={pathname.toLowerCase() === '/servicos' ? 'active' : ''}>
+            <span className="mdi mdi-auto-fix" />
+            <p>Servicos</p>
+          </Link>
+        </li>
       </ul>
     </aside>
   );
