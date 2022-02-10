@@ -9,7 +9,6 @@ import { getUsuarioAutenticado } from './store/modules/user/actions';
 import Agendamentos from './pages/Agendamentos';
 import Clientes from './pages/Clientes';
 import TelaLogin from './pages/Login';
-import NotFound from './pages/NotFound';
 import TelaCadastro from './pages/Cadastro';
 import Colaboradores from './pages/Colaboradores';
 import Servicos from './pages/Servicos';
@@ -35,7 +34,7 @@ const Rotas = () => {
     <Router>
       {logado ? (
         <Routes>
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<Agendamentos />} />
           <Route
             path="/"
             element={

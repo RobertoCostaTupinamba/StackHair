@@ -4,6 +4,10 @@ export function autenticarUsuario(dadosDoUsuario) {
   return { type: types.AUTENTICAR_USUARIO, dadosDoUsuario };
 }
 
+export function cadastrarUsuario(dadosDoUsuario) {
+  return { type: types.CADASTRAR_USUARIO, dadosDoUsuario };
+}
+
 export function usuarioAutenticado(dadosDoUsuarioAutenticado) {
   return { type: types.AUTENTICADO_USUARIO, dadosDoUsuarioAutenticado };
 }
