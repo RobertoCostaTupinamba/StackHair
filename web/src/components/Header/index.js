@@ -6,8 +6,8 @@ const Header = () => {
   const [fotoSalao, setFotoSalao] = useState(false);
   // let fotoSalao = foto == 'null' ? false : foto == 'undefined' ? false : true;
   useEffect(() => {
-    const boolean = foto == null ? false : foto == 'undefined' ? false : true;
-    console.log(boolean, foto == 'null' ? false : foto == 'undefined' ? false : true, foto);
+    const boolean = foto == null ? true : foto == 'undefined' ? true : false;
+
     setFotoSalao(boolean);
   }, [foto]);
   return (

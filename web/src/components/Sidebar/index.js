@@ -32,6 +32,12 @@ const Sidebar = () => {
             <p>Servicos</p>
           </Link>
         </li>
+        <li>
+          <Link to="/horarios" className={pathname.toLowerCase() === '/horarios' ? 'active' : ''}>
+            <span className="mdi mdi-clock-check-outline" />
+            <p>Horários</p>
+          </Link>
+        </li>
       </ul>
     </aside>
   );

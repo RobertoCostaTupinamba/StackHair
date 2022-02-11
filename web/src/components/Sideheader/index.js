@@ -6,7 +6,7 @@ const Sideheader = ({ children }) => {
     <>
       <Header />
       <div className="container-fluid h-100">
-        <div className="row h-100">
+        <div className="row h-100 ">
           <Sidebar />
           {children}
         </div>
