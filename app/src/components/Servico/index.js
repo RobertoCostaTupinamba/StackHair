@@ -1,8 +1,9 @@
+import moment from 'moment';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Text, Box, Button, Cover, Spacer, Touchable } from '../../styles';
 
-const servico = () => {
+const servico = ({ servico }) => {
   const dispatch = useDispatch();
   return (
     <Touchable
@@ -16,12 +17,18 @@ const servico = () => {
       //   dispatch(filterAgenda());
       // }}
     >
-      <Cover image="https://defrenteparaomar.com/wp-content/10-beleza/202010-cabelo-medio-liso/13-corte-de-cabelo-medio-liso.jpg" />
+      <Cover image={servico.arquivos[0].arquivo} />
       <Box direction="column">
         <Text bold color="dark">
-          Corte de Cabelo Feminino
+          {servico.titulo}
         </Text>
-        <Text small>R$ 45 • 30mins</Text>
+        <Text small>
+          R$ {servico.preco} •{' '}
+          {moment(servico?.duracao)
+            .format('H:mm')
+            .replace(/^(?:0:)?0?/, '')}{' '}
+          mins
+        </Text>
       </Box>
       <Box>
         <Button

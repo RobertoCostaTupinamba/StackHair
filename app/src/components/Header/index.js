@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Badge,
   Cover,
@@ -14,15 +14,14 @@ import {
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import theme from '../../styles/theme.json';
+import { Linking, Share } from 'react-native';
 
 const Header = () => {
   const { salao, servicos, form } = useSelector(state => state.salao);
+
   return (
     <>
-      <Cover
-        width="100%"
-        height="300px"
-        image="https://s2.glbimg.com/Ha2q-YYa3pCWtwM4E51zi_p-POI=/940x523/e.glbimg.com/og/ed/f/original/2019/02/20/blow-dry-bar-del-mar-chairs-counter-853427.jpg">
+      <Cover width="100%" height="300px" image={salao.capa}>
         <GradientView
           hasPadding
           justify="flex-end"
@@ -32,7 +31,7 @@ const Header = () => {
           </Badge>
           <Title color="light">{salao.nome}</Title>
           <Text composed color="light">
-            {salao?.endereco?.cidade} • {salao.distance} km
+            {salao?.endereco?.cidade}
           </Text>
         </GradientView>
       </Cover>
@@ -52,7 +51,11 @@ const Header = () => {
             width="30%"
             direction="column"
             align="center"
-            onPress={() => openGps(salao?.geo?.coordinates)}>
+            onPress={() => {
+              Linking.openURL(
+                `https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&destination=${salao.geo.coordinates[0]},${salao.geo.coordinates[1]}`,
+              );
+            }}>
             <Icon name="map-marker" size={24} color={theme.colors.muted} />
             <Text small spacing="10px 0 0">
               Visitar
@@ -64,7 +67,7 @@ const Header = () => {
             align="center"
             onPress={() =>
               Share.share({
-                message: `${salao.nome} - Salão na mão.`,
+                message: `${salao.nome} - StackHair.`,
               })
             }>
             <Icon name="share" size={24} color={theme.colors.muted} />
@@ -87,7 +90,7 @@ const Header = () => {
         </Box> */}
       </Box>
       <Box hasPadding direction="column" background="light" spacing="10px 0 0">
-        <Title small>Serviços (2)</Title>
+        <Title small>Serviços ({servicos.length})</Title>
         <TextInput placeholder="Digite o nome do serviço ..." />
       </Box>
     </>

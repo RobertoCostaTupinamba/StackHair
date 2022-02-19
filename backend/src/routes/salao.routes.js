@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt');
 const turf = require('turf');
 const Salao = require('../models/Salao');
 const Servico = require('../models/Servico');
+const Horario = require('../models/Horario');
+const utils = require('../utils/utils');
 
 // Cadastrar o salão
 // Dados esperados:
@@ -14,7 +16,7 @@ const Servico = require('../models/Servico');
 // - Senha
 router.post('/register', async (req, res) => {
   try {
-    const { nome, email, senha, geo } = req.body;
+    const { nome, email, senha, geo, telefone, capa, endereco } = req.body;
 
     console.log(nome);
 
@@ -55,6 +57,9 @@ router.post('/register', async (req, res) => {
     const salao = await new Salao({
       nome,
       email,
+      capa,
+      telefone,
+      endereco,
       senha: passwordHash,
       geo,
     }).save();
@@ -131,9 +136,15 @@ router.get('/:id', async (req, res) => {
     // DISTANCIA em km
     const distance = turf.distance(turf.point(salao.geo.coordinates), turf.point([-18.7010522, -47.5599377]));
 
-    res.json({ error: false, salao, distance });
+    const horarios = await Horario.find({
+      salaoId: req.params.id,
+    }).select('dias inicio fim');
+
+    const isOpened = await utils.isOpened(horarios);
+
+    res.json({ error: false, salao: { ...salao._doc, distance, isOpened } });
   } catch (err) {
-    res.status(422).json({ error: true, message: err.message });
+    res.status(422).json({ error: true, message: err.messge });
   }
 });
 
