@@ -34,7 +34,7 @@ function salao(state = INITIAL_STATE, action) {
   switch (action.type) {
     case types.UPDATE_FORM: {
       return produce(state, draft => {
-        draft.form = { ...draft.form, [action.key]: action.value };
+        draft.form = { ...draft.form, ...action.payload };
       });
     }
     case types.UPDATE_SALAO: {
@@ -62,11 +62,11 @@ function salao(state = INITIAL_STATE, action) {
     }
     case types.UPDATE_AGENDAMENTO: {
       return produce(state, draft => {
-        if (action.key === 'servicoId') {
+        if (action.payload.servicoId) {
           draft.form.modalAgendamento = 2;
         }
 
-        draft.agendamento[action.key] = action.value;
+        draft.agendamento = { ...state.agendamento, ...action.payload };
       });
     }
     case types.RESET_AGENDAMENTO: {

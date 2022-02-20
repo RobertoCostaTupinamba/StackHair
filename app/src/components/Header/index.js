@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { updateForm } from '../../store/modules/salao/action';
 import {
   Badge,
   Cover,
@@ -17,6 +18,7 @@ import theme from '../../styles/theme.json';
 import { Linking, Share } from 'react-native';
 
 const Header = () => {
+  const dispatch = useDispatch();
   const { salao, servicos, form } = useSelector(state => state.salao);
 
   return (
@@ -91,7 +93,16 @@ const Header = () => {
       </Box>
       <Box hasPadding direction="column" background="light" spacing="10px 0 0">
         <Title small>Serviços ({servicos.length})</Title>
-        <TextInput placeholder="Digite o nome do serviço ..." />
+        <TextInput
+          onFocus={() => {
+            dispatch(updateForm({ inputFiltroFoco: true }));
+          }}
+          onBlur={() => {
+            dispatch(updateForm({ inputFiltroFoco: false }));
+          }}
+          onChangeText={value => dispatch(updateForm({ inputFiltro: value }))}
+          placeholder="Digite o nome do serviço ..."
+        />
       </Box>
     </>
   );

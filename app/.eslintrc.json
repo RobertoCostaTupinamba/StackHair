@@ -29,13 +29,14 @@
         "no-use-before-define": "off",
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn",
-        "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+        "react/jsx-filename-extension": [1, { "extensions": [".js"] }],
         "import/prefer-default-export": "off",
         "no-unused-expressions": "off",
         "import/extensions": [
             "error",
             "ignorePackages",
             {
+                "js": "never",
                 "ts": "never",
                 "tsx": "never"
             }
@@ -43,7 +44,7 @@
     },
     "settings": {
             "import/resolver": {
-            "typescript": {}
+            "javascript": {}
         }
     }
 }
