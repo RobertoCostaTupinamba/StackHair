@@ -30,6 +30,7 @@ const Datetime = ({
     let data = !isTime
       ? `${value}T${horariosDisponiveis[0][0]}`
       : `${dataSelecionada}T${value}`;
+
     dispatch(updateAgendamento({ data: moment(data).format() }));
   };
 

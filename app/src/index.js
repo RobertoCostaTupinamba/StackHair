@@ -7,11 +7,6 @@ const InitialApp = () => {
   const { cliente } = useSelector(state => state.user);
 
   return <Routes />;
-
-  // if (!cliente.logado) {
-  //   return <Text>aaaaaa</Text>;
-  // }
-  // return <Text>bbbbbb</Text>;
 };
 
 export default InitialApp;

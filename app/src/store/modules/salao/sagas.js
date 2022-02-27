@@ -90,7 +90,15 @@ export function* saveAgendamento() {
     yield put(updateForm('agendamentoLoading', true));
 
     const { agendamento } = yield select(state => state.salao);
-    const { data: res } = yield call(api.post, `/agendamento`, agendamento);
+
+    let formatAgendamento = moment(agendamento.data);
+
+    formatAgendamento.add(3, 'hours');
+
+    const { data: res } = yield call(api.post, `/agendamento`, {
+      ...agendamento,
+      data: formatAgendamento,
+    });
     if (res.error) {
       alert(res.message);
       return false;

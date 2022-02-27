@@ -368,6 +368,7 @@ const Horarios = () => {
               }}
               onSelectSlot={(slotInfo) => {
                 const { start, end } = slotInfo;
+
                 dispatch(
                   updateHorario({
                     behavior: 'create',

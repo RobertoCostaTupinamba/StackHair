@@ -1,9 +1,16 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import Login from '../pages/Login';
+import Home from '../pages/Home';
 import AuthRoutes from './auth.routes';
 // import AppRoutes from './app.routes';
 import { useSelector } from 'react-redux';
+
+const Stack = createNativeStackNavigator();
 
 const Routes = () => {
   const { cliente } = useSelector(state => state.user);
@@ -16,7 +23,31 @@ const Routes = () => {
   //   );
   // }
 
-  return cliente.logado ? <View /> : <AuthRoutes />;
+  return (
+    <NavigationContainer>
+      {cliente.logado ? (
+        <Stack.Navigator>
+          <Stack.Screen
+            name="home"
+            component={Home}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen
+            name="login"
+            component={Login}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+  );
 };
 
 export default Routes;
