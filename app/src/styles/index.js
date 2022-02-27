@@ -12,6 +12,7 @@ import theme from './theme.json';
 import util from '../util';
 
 import LinearGradient from 'react-native-linear-gradient';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const Cover = styled.ImageBackground.attrs(props => ({
   source: {
@@ -24,6 +25,7 @@ export const Cover = styled.ImageBackground.attrs(props => ({
   border-radius: ${props => (props.circle ? props.width : '3px')};
   border: ${props => props.border || 'none'};
   background-color: ${theme.colors.muted};
+  overflow: hidden;
 `;
 
 export const Spacer = styled.View`
@@ -91,7 +93,7 @@ export const Box = styled.View`
     theme.colors[props.background] || props.background || 'transparent'};
 `;
 
-export const Touchable = styled.TouchableOpacity`
+export const Touchable = styled(TouchableOpacity)`
   flex-direction: ${props => props.direction || 'row'};
   justify-content: ${props => props.justify || 'flex-start'};
   align-items: ${props => props.align || 'flex-start'};

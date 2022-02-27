@@ -45,7 +45,4 @@ export default {
 
     return { horariosDisponiveis, data, colaboradorId, colaboradoresDia };
   },
-  AWS: {
-    bucketURL: 'https://salao-na-mao.s3.amazonaws.com',
-  },
 };

@@ -16,6 +16,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import theme from '../../styles/theme.json';
 import { Linking, Share } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ const Header = () => {
       <Box background="light" align="center">
         <Box hasPadding justify="space-around">
           <Touchable
-            width="30%"
+            width={RFValue(90)}
             direction="column"
             align="center"
             onPress={() => Linking.openURL(`tel:${salao.telefone}`)}>
@@ -50,7 +51,7 @@ const Header = () => {
             </Text>
           </Touchable>
           <Touchable
-            width="30%"
+            width={RFValue(90)}
             direction="column"
             align="center"
             onPress={() => {
@@ -64,7 +65,7 @@ const Header = () => {
             </Text>
           </Touchable>
           <Touchable
-            width="30%"
+            width={RFValue(90)}
             direction="column"
             align="center"
             onPress={() =>

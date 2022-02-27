@@ -1,46 +1,92 @@
+import moment from 'moment/min/moment-with-locales';
+moment.locale('pt-br');
 import React from 'react';
 import { Dimensions } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Modal from 'react-native-simple-modal';
+import { useDispatch } from 'react-redux';
+
+import {
+  updateForm,
+  updateAgendamento,
+} from '../../../../store/modules/salao/action';
 
 import { Text, Box, Touchable, Cover } from '../../../../styles';
 import theme from '../../../../styles/theme.json';
 import util from '../../../../util';
 
-const EspecialistasModal = () => {
+const EspecialistasModal = ({
+  form,
+  colaboradores,
+  agendamento,
+  servicos,
+  colaboradoresDia,
+  horaSelecionada,
+}) => {
+  const dispatch = useDispatch();
+
+  let colaboradoresIdsDisponiveis = [];
+
+  for (let colaboradorId of Object.keys(colaboradoresDia)) {
+    let horarios = colaboradoresDia?.[colaboradorId].flat(2);
+    if (horarios.includes(horaSelecionada)) {
+      colaboradoresIdsDisponiveis?.push(colaboradorId);
+    }
+  }
+
+  const colaboradoresDisponiveis = colaboradores?.filter(c =>
+    colaboradoresIdsDisponiveis?.includes(c._id),
+  );
+  const servico = servicos.filter(c => c._id === agendamento?.servicoId)[0];
+
   return (
-    <Modal open={false}>
+    <Modal
+      offset={-500}
+      open={form?.modalEspecialista}
+      modalDidClose={() => dispatch(updateForm({ modalEspecialista: false }))}>
       <ScrollView>
         <Box hasPadding direction="column">
           <Text bold color="dark">
-            Corte de cabelo feminino
+            {servico?.titulo + ' '}
           </Text>
           <Text small composed>
-            disponíveis em 20/04/2022
+            disponíveis em{' '}
+            <Text small underline composed>
+              {moment(agendamento?.data).format('DD/MM/YYYY (ddd) [às] HH:mm')}
+            </Text>
           </Text>
           <Box wrap="wrap" height="auto" spacing="10px 0 0">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(colaborador => (
+            {colaboradoresDisponiveis?.map(colaborador => (
               <Touchable
                 key={colaborador.toString()}
                 width={(Dimensions.get('screen').width - RFValue(150)) / 4}
                 height={`${RFValue(70)}px`}
                 spacing="10px 10px 0px 0px"
                 direction="column"
-                align="center">
+                align="center"
+                onPress={() => {
+                  dispatch(
+                    updateAgendamento({ colaboradorId: colaborador?._id }),
+                  );
+                  dispatch(updateForm({ modalEspecialista: false }));
+                }}>
                 <Cover
                   height={`${RFValue(45)}px`}
                   width={`${RFValue(45)}px`}
                   circle
                   border={
-                    colaborador === 1
+                    colaborador._id === agendamento.colaboradorId
                       ? `3px solid ${theme.colors.primary}`
                       : 'none'
                   }
                   spacing="0px 0px 5px 0px"
+                  image={colaborador?.foto}
                 />
-                <Text small bold>
-                  Roberto
+                <Text
+                  small
+                  bold={colaborador?._id === agendamento?.colaboradorId}>
+                  {colaborador?.nome}
                 </Text>
               </Touchable>
             ))}

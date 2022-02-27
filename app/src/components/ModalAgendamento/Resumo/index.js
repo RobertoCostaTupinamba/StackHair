@@ -4,14 +4,7 @@ import { Text, Title, Spacer, Box, Cover } from '../../../styles';
 import util from '../../../util';
 import theme from '../../../styles/theme.json';
 
-const Resumo = ({ servicos, agendamento }) => {
-  const servico = servicos.filter(s => {
-    if (s._id === agendamento.servicoId) {
-      return s;
-    }
-    // return s._id === agendamento.servicoId; // return s._id === agendamento.servicoId;
-  })[0];
-
+const Resumo = ({ servico }) => {
   return (
     <Box
       justify="flex-start"

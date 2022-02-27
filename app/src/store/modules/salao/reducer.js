@@ -15,8 +15,8 @@ const INITIAL_STATE = {
   agenda: [],
   colaboradores: [],
   agendamento: {
-    clienteId: null,
-    salaoId: null,
+    clienteId: '61f19cae5741786d726b5f24',
+    salaoId: '61e2eac085ecb6942df4a677',
     servicoId: null,
     colaboradorId: null,
     data: null,
@@ -74,6 +74,7 @@ function salao(state = INITIAL_STATE, action) {
         draft.agenda = INITIAL_STATE.agenda;
         draft.colaboradores = INITIAL_STATE.colaboradores;
         draft.agendamento = INITIAL_STATE.agendamento;
+        return draft;
       });
     }
     default: {

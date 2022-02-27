@@ -17,9 +17,9 @@ const Servico = ({ servico }) => {
       height="100px"
       background="light"
       onPress={() => {
-        // useDispatch(resetAgendamento());
+        dispatch(resetAgendamento());
         dispatch(updateAgendamento({ servicoId: servico?._id }));
-        // dispatch(filterAgenda());
+        dispatch(filterAgenda());
       }}>
       <Cover image={servico.arquivos[0].arquivo} />
       <Box direction="column">
