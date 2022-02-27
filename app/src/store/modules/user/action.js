@@ -1,18 +1,18 @@
 import types from './types';
 
-export function getUser() {
-  return {type: types.GET_USER};
+export function getUser(data) {
+  return { type: types.GET_USER, data };
 }
 
 export function updateUser(user) {
-  return {type: types.UPDATE_USER, user};
+  console.log(user);
+  return { type: types.UPDATE_USER, user };
 }
 
 export function updateForm(key, value) {
-  return {type: types.UPDATE_FORM, key, value};
+  return { type: types.UPDATE_FORM, key, value };
 }
 
 export function resetUser() {
-  return {type: types.RESET_USER};
+  return { type: types.RESET_USER };
 }
-

@@ -38,7 +38,8 @@ function user(state = INITIAL_STATE, action) {
     }
     case types.UPDATE_USER: {
       return produce(state, draft => {
-        draft.cliente = _.uniq([...draft.cliente, ...action.cliente]);
+        console.log('ddddd', draft.cliente);
+        draft.cliente = { ...draft.cliente, ...action.user };
       });
     }
     case types.RESET_USER: {

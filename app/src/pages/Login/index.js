@@ -10,6 +10,9 @@ import {
 
 import { useForm, Controller } from 'react-hook-form';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUser, getUser } from '../../store/modules/user/action';
+
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
@@ -27,6 +30,8 @@ const schema = yup
   .required();
 
 const Login = () => {
+  const dispatch = useDispatch();
+
   const {
     control,
     handleSubmit,
@@ -34,7 +39,10 @@ const Login = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const onSubmit = data => console.log(data);
+
+  const onSubmit = data => {
+    dispatch(getUser(data));
+  };
 
   return (
     <>

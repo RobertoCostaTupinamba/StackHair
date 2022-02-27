@@ -4,9 +4,37 @@ const mongoose = require('mongoose');
 
 const router = express.Router();
 
+const bcrypt = require('bcrypt');
+
 const Cliente = require('../models/Cliente');
 const ApiGoogle = require('../models/ApiGoogle');
 const SalaoCliente = require('../models/relationship/SalaoCliente');
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, senha } = req.body;
+
+    // verificar se o cliente existe
+    const existeCliente = await Cliente.findOne({
+      email,
+    });
+
+    if (!existeCliente) {
+      return res.json({ error: true, message: 'E-mail ou senha inválido' });
+    }
+
+    // check password
+    const checkPassword = await bcrypt.compare(senha, existeCliente.senha);
+
+    if (!checkPassword) {
+      return res.status(422).json({ error: true, msg: 'E-mail ou senha inválida!' });
+    }
+
+    res.json({ clienteId: existeCliente._id, nome: existeCliente.nome, email: existeCliente.email, logado: true });
+  } catch (error) {
+    res.json({ error: true, message: error.message });
+  }
+});
 
 router.post('/', async (req, res) => {
   const db = mongoose.connection;
