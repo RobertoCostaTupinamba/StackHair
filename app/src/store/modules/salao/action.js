@@ -1,11 +1,19 @@
 import types from './types';
 
+export async function getAllSalao() {
+  return { type: types.ALL_SALAO };
+}
+
 export function getSalao() {
   return { type: types.GET_SALAO };
 }
 
 export function updateSalao(salao) {
   return { type: types.UPDATE_SALAO, salao };
+}
+
+export function updateListaSalao(salaos) {
+  return { type: types.UPDATE_ALL_SALAO, salaos };
 }
 
 export function allServicos() {

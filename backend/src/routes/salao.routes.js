@@ -4,6 +4,7 @@ const router = express.Router();
 
 const bcrypt = require('bcrypt');
 const turf = require('turf');
+const { toObject } = require('mongoose/lib/utils');
 const Salao = require('../models/Salao');
 const Servico = require('../models/Servico');
 const Horario = require('../models/Horario');
@@ -133,16 +134,31 @@ router.get('/:id', async (req, res) => {
   try {
     const salao = await Salao.findById(req.params.id, { senha: 0 });
 
-    // DISTANCIA em km
-    const distance = turf.distance(turf.point(salao.geo.coordinates), turf.point([-18.7010522, -47.5599377]));
-
     const horarios = await Horario.find({
       salaoId: req.params.id,
     }).select('dias inicio fim');
 
     const isOpened = await utils.isOpened(horarios);
 
-    res.json({ error: false, salao: { ...salao._doc, distance, isOpened } });
+    res.json({ error: false, salao: { ...salao._doc, isOpened } });
+  } catch (err) {
+    res.status(422).json({ error: true, message: err.messge });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const salao = await Salao.find({}, { senha: 0 });
+
+    const infoSalao = [];
+    const infoHorarios = [];
+
+    salao.map(async (s) => {
+      const id = s._id.toString();
+      infoSalao.push({ id, nome: s._doc.nome });
+    });
+
+    res.json({ error: false, salao: [...infoSalao] });
   } catch (err) {
     res.status(422).json({ error: true, message: err.messge });
   }

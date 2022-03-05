@@ -9,6 +9,7 @@ import Home from '../pages/Home';
 import Cadastro from '../pages/Cadastro';
 // import AppRoutes from './app.routes';
 import { useSelector } from 'react-redux';
+import Listagem from '../pages/Listagem';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,13 @@ const Routes = () => {
     <NavigationContainer>
       {cliente.logado ? (
         <Stack.Navigator>
+          <Stack.Screen
+            name="listagem"
+            component={Listagem}
+            options={{
+              headerShown: false,
+            }}
+          />
           <Stack.Screen
             name="home"
             component={Home}

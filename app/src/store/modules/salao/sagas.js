@@ -15,12 +15,26 @@ import {
 import util from '../../../util';
 import { Alert } from 'react-native';
 
-export function* getSalao() {
+export function* getAllSalao() {
   try {
-    const { data: res } = yield call(
-      api.get,
-      `/salao/61e2eac085ecb6942df4a677`,
-    );
+    const { data: res } = yield call(api.get, `/salao`);
+    console.log(res);
+    if (res.error) {
+      alert(res.message);
+      return false;
+    }
+
+    yield put(updateListaSalao(res.salao));
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+export function* getSalao() {
+  const { agendamento } = yield select(state => state.salao);
+  try {
+    const { data: res } = yield call(api.get, `/salao/${agendamento.salaoId}`);
+    console.log(res);
     if (res.error) {
       alert(res.message);
       return false;
@@ -33,10 +47,11 @@ export function* getSalao() {
 }
 
 export function* allServicos() {
+  const { agendamento } = yield select(state => state.salao);
   try {
     const { data: res } = yield call(
       api.get,
-      `/servico/salao/61e2eac085ecb6942df4a677`,
+      `/servico/salao/${agendamento.salaoId}`,
     );
     if (res.error) {
       alert(res.message);
@@ -115,6 +130,7 @@ export function* saveAgendamento() {
 }
 
 export default all([
+  takeLatest(types.ALL_SALAO, getAllSalao),
   takeLatest(types.GET_SALAO, getSalao),
   takeLatest(types.ALL_SERVICOS, allServicos),
   takeLatest(types.FILTER_AGENDA, filterAgenda),

@@ -3,6 +3,7 @@ import produce from 'immer';
 import * as _ from 'underscore';
 
 const INITIAL_STATE = {
+  listaSalao: [],
   salao: {
     isOpened: true,
     nome: 'Salão Tupi',
@@ -15,7 +16,7 @@ const INITIAL_STATE = {
   agenda: [],
   colaboradores: [],
   agendamento: {
-    clienteId: '61f19cae5741786d726b5f24',
+    clienteId: '',
     salaoId: '61e2eac085ecb6942df4a677',
     servicoId: null,
     colaboradorId: null,
@@ -35,6 +36,11 @@ function salao(state = INITIAL_STATE, action) {
     case types.UPDATE_FORM: {
       return produce(state, draft => {
         draft.form = { ...draft.form, ...action.payload };
+      });
+    }
+    case types.UPDATE_ALL_SALAO: {
+      return produce(state, draft => {
+        draft.listaSalao = { ...draft.listaSalao, ...action.salaos };
       });
     }
     case types.UPDATE_SALAO: {
