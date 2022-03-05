@@ -47,55 +47,69 @@ router.post('/', async (req, res) => {
     let newCliente = null;
     let apiGoogle = await ApiGoogle.find();
 
-    if (cliente.endereco.logradouro && cliente.endereco.cidade && cliente.endereco.numero) {
-      if (apiGoogle.length === 0) {
-        apiGoogle = await new ApiGoogle().save();
+    if (cliente.endereco) {
+      if (cliente.endereco.logradouro && cliente.endereco.cidade && cliente.endereco.numero) {
+        if (apiGoogle.length === 0) {
+          apiGoogle = await new ApiGoogle().save();
+        }
+
+        if (apiGoogle[0].contador !== 990) {
+          apiGoogle[0].contador += 1;
+
+          const apiKey = process.env.API_KEY;
+          const endereco = `${cliente.endereco.logradouro
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '+')}+${cliente.endereco.numero.replace(/\s+/g, '+')}+${cliente.endereco.cidade
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '+')}`;
+
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${endereco}&key=${apiKey}`,
+          );
+
+          geo = {
+            type: 'Point',
+            coordinates: [
+              response.data.results[0].geometry.location.lat,
+              response.data.results[0].geometry.location.lng,
+            ],
+          };
+
+          await apiGoogle[0].save();
+        } else {
+          await session.abortTransaction();
+          session.endSession();
+          res.json({ error: true, message: 'API de geolocalização está quase no limite' });
+        }
       }
-
-      if (apiGoogle[0].contador !== 990) {
-        apiGoogle[0].contador += 1;
-
-        const apiKey = process.env.API_KEY;
-        const endereco = `${cliente.endereco.logradouro
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/\s+/g, '+')}+${cliente.endereco.numero.replace(/\s+/g, '+')}+${cliente.endereco.cidade
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/\s+/g, '+')}`;
-
-        const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${endereco}&key=${apiKey}`,
-        );
-
-        geo = {
-          type: 'Point',
-          coordinates: [response.data.results[0].geometry.location.lat, response.data.results[0].geometry.location.lng],
-        };
-
-        await apiGoogle[0].save();
-      } else {
-        await session.abortTransaction();
-        session.endSession();
-        res.json({ error: true, message: 'API de geolocalização está quase no limite' });
-      }
-    } else {
-      await session.abortTransaction();
-      session.endSession();
-      res.json({ error: true, message: 'Existem campos faltando' });
     }
+
+    console.log('aaaa');
 
     // verificar se o cliente existe
     const existeCliente = await Cliente.findOne({
-      $or: [{ email: cliente.email }, { telefone: cliente.telefone }],
+      email: cliente.email,
     });
 
     // Se não existir cliente
     if (!existeCliente) {
-      newCliente = await new Cliente({
-        ...cliente,
-        geo,
-      }).save({ session });
+      if (cliente.senha) {
+        // gerando a senha
+        const salt = await bcrypt.genSalt(12);
+        const passwordHash = await bcrypt.hash(cliente.senha, salt);
+        newCliente = await new Cliente({
+          ...cliente,
+          senha: passwordHash,
+          geo,
+        }).save({ session });
+      } else {
+        newCliente = await new Cliente({
+          ...cliente,
+          geo,
+        }).save({ session });
+      }
     }
 
     // Relacionamento

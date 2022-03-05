@@ -11,13 +11,14 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUser, getUser } from '../../store/modules/user/action';
+import { createUser } from '../../store/modules/user/action';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 const schema = yup
   .object({
+    nome: yup.string().required('Campo é obrigatorio'),
     email: yup
       .string()
       .email('Insira um email valido')
@@ -29,7 +30,7 @@ const schema = yup
   })
   .required();
 
-const Login = ({ navigation }) => {
+const Cadastro = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const {
@@ -41,7 +42,7 @@ const Login = ({ navigation }) => {
   });
 
   const onSubmit = data => {
-    dispatch(getUser(data));
+    dispatch(createUser(data));
   };
 
   return (
@@ -60,8 +61,52 @@ const Login = ({ navigation }) => {
           alignItems: 'center',
         }}>
         <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>
-          Faça seu login
+          Faça seu cadastro
         </Text>
+
+        <View
+          style={{
+            backgroundColor: '#232129',
+            borderRadius: 10,
+            padding: 2,
+            width: '100%',
+            height: 50,
+
+            borderWidth: 2,
+            borderStyle: 'solid',
+            borderColor: '#232129',
+            color: '#666360',
+
+            alignItems: 'center',
+            marginTop: 10,
+          }}>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={{
+                  width: '100%',
+                  height: '100%',
+
+                  color: '#f4ede8',
+                }}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="Nome Completo"
+                autoCapitalize="none"
+                placeholderTextColor="#666360"
+              />
+            )}
+            name="nome"
+          />
+        </View>
+        {errors.nome && (
+          <Text style={{ color: 'red' }}>{errors.nome.message}</Text>
+        )}
 
         <View
           style={{
@@ -181,13 +226,13 @@ const Login = ({ navigation }) => {
           alignItems: 'center',
           borderRadius: 8,
         }}
-        onPress={() => navigation.navigate('cadastro')}>
+        onPress={() => navigation.navigate('login')}>
         <Text style={{ color: '#312e38', fontWeight: '500', fontSize: 16 }}>
-          Criar uma conta
+          Voltar para login
         </Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default Login;
+export default Cadastro;

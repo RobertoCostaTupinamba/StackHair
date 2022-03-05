@@ -1,4 +1,5 @@
 const types = {
+  CREATE_USER: '@user/CREATE',
   GET_USER: '@user/GET',
   UPDATE_USER: '@user/UPDATE',
   UPDATE_FORM: '@user/UPDATE_FORM',

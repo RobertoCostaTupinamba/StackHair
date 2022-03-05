@@ -27,7 +27,7 @@ const Cliente = new Schema({
   },
   telefone: {
     type: String,
-    required: [true, 'Telefone é obrigatório'],
+    required: false,
   },
   dataNascimento: {
     type: String, // YYYY-MM-DD
@@ -35,7 +35,7 @@ const Cliente = new Schema({
   sexo: {
     type: String,
     enum: ['M', 'F'],
-    required: [true, 'Sexo é obrigatório'],
+    required: false,
   },
   endereco: {
     cidade: String,

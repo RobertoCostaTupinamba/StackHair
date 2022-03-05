@@ -1,5 +1,9 @@
 import types from './types';
 
+export function createUser(data) {
+  return { type: types.CREATE_USER, data };
+}
+
 export function getUser(data) {
   return { type: types.GET_USER, data };
 }

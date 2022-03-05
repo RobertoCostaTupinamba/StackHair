@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Login from '../pages/Login';
 import Home from '../pages/Home';
-import AuthRoutes from './auth.routes';
+import Cadastro from '../pages/Cadastro';
 // import AppRoutes from './app.routes';
 import { useSelector } from 'react-redux';
 
@@ -40,6 +40,13 @@ const Routes = () => {
           <Stack.Screen
             name="login"
             component={Login}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="cadastro"
+            component={Cadastro}
             options={{
               headerShown: false,
             }}
