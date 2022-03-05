@@ -44,7 +44,9 @@ const EspecialistasModal = ({
     <Modal
       offset={-500}
       open={form?.modalEspecialista}
-      modalDidClose={() => dispatch(updateForm({ modalEspecialista: false }))}>
+      modalDidClose={() => {
+        dispatch(updateForm({ modalEspecialista: false }));
+      }}>
       <ScrollView>
         <Box hasPadding direction="column">
           <Text bold color="dark">
@@ -60,7 +62,9 @@ const EspecialistasModal = ({
             {colaboradoresDisponiveis?.map(colaborador => (
               <Touchable
                 key={colaborador.toString()}
-                width={(Dimensions.get('screen').width - RFValue(150)) / 4}
+                width={`${
+                  (Dimensions.get('screen').width - RFValue(150)) / 4
+                }px`}
                 height={`${RFValue(70)}px`}
                 spacing="10px 10px 0px 0px"
                 direction="column"

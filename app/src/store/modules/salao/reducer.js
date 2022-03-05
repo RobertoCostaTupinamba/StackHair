@@ -17,7 +17,7 @@ const INITIAL_STATE = {
   colaboradores: [],
   agendamento: {
     clienteId: '',
-    salaoId: '61e2eac085ecb6942df4a677',
+    salaoId: '',
     servicoId: null,
     colaboradorId: null,
     data: null,
@@ -79,7 +79,7 @@ function salao(state = INITIAL_STATE, action) {
       return produce(state, draft => {
         draft.agenda = INITIAL_STATE.agenda;
         draft.colaboradores = INITIAL_STATE.colaboradores;
-        draft.agendamento = INITIAL_STATE.agendamento;
+
         return draft;
       });
     }

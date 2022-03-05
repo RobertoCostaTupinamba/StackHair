@@ -84,6 +84,7 @@ const Login = ({ navigation }) => {
             rules={{
               required: true,
             }}
+            defaultValue={'roberto@gmail.com'}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 style={{
@@ -130,6 +131,7 @@ const Login = ({ navigation }) => {
             rules={{
               required: true,
             }}
+            defaultValue={'11111111'}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 style={{
