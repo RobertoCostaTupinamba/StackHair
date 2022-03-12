@@ -335,7 +335,10 @@ const Clientes = () => {
                 {
                   label: 'Sexo',
                   key: 'sexo',
-                  content: (cliente) => (cliente.sexo === 'M' ? 'Masculino' : 'Feminino'),
+                  content: (cliente) => {
+                    console.log(cliente.clienteId);
+                    return cliente.sexo === 'M' ? 'Masculino' : 'Feminino';
+                  },
                   width: 200,
                 },
                 {

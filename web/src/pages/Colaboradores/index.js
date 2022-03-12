@@ -10,6 +10,7 @@ import {
   resetColaborador,
   unlinkColaborador,
   allServicos,
+  removeArquivo,
 } from '../../store/modules/colaborador/actions';
 import moment from 'moment';
 import Table from '../../components/Table';
@@ -20,12 +21,15 @@ import {
   TagPicker,
   Checkbox,
   Modal,
+  Uploader,
 } from 'rsuite';
+import ImageIcon from '@rsuite/icons/Image';
 import RemindFillIcon from '@rsuite/icons/RemindFill';
 import util from '../../utils/utils';
 import 'rsuite/dist/rsuite.min.css';
 import 'rsuite/dist/rsuite.min.js';
 import 'rsuite/Button/styles/index.less';
+import { notification } from '../../services/rsuite';
 
 const Colaboradores = () => {
   const dispatch = useDispatch();
@@ -73,7 +77,7 @@ const Colaboradores = () => {
   const save = () => {
     if (!util.allFields(colaborador, ['email', 'nome', 'telefone', 'dataNascimento', 'sexo'])) {
       // DISPARAR O ALERTA
-      Notification.error({
+      notification('error', {
         placement: 'topStart',
         title: 'Calma lá!',
         description: 'Antes de prosseguir, preencha todos os campos!',
@@ -171,6 +175,7 @@ const Colaboradores = () => {
                 <b className="">Data de Nascimento</b>
                 <input
                   type="date"
+                  style={{ width: '100%', paddingRight: 0 }}
                   className="form-control"
                   placeholder="Data de Nascimento do cliente"
                   disabled={form.disabled}
@@ -220,6 +225,53 @@ const Colaboradores = () => {
                   {' '}
                   Selecionar Todas
                 </Checkbox>
+              </div>
+
+              <div className="form-group col-12">
+                <b className="d-block">Foto do colaborador</b>
+                <Uploader
+                  multiple={false}
+                  autoUpload={false}
+                  listType="picture"
+                  action="//jsonplaceholder.typicode.com/posts/"
+                  defaultFileList={
+                    colaborador.foto
+                      ? [
+                          {
+                            name: `${colaborador?.foto}`,
+                            fileKey: 0,
+                            url: `${colaborador?.foto}`,
+                          },
+                        ]
+                      : []
+                  }
+                  onChange={(files) => {
+                    const arquivo = files.filter((f) => f.blobFile).map((f) => f.blobFile);
+                    console.log(arquivo);
+                    setColaborador('foto', arquivo);
+                  }}
+                  onRemove={(file) => {
+                    console.log(file);
+                    if (behavior === 'update' && file.url) {
+                      const nameFormat = file.name?.split('/');
+                      dispatch(
+                        removeArquivo(
+                          `${nameFormat[nameFormat.length - 3]}/${nameFormat[nameFormat.length - 2]}/${
+                            nameFormat[nameFormat.length - 1]
+                          }`,
+                        ),
+                      );
+                    }
+                  }}
+                >
+                  {colaborador.foto ? (
+                    <></>
+                  ) : (
+                    <button>
+                      <ImageIcon color={'#ffb300'} fontSize={24} />
+                    </button>
+                  )}
+                </Uploader>
               </div>
             </div>
             <Button

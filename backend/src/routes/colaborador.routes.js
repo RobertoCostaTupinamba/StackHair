@@ -21,7 +21,8 @@ router.post('/', async (req, res) => {
 
   try {
     const { salaoId } = req.body;
-    const { colaborador } = req.body;
+
+    const colaborador = JSON.parse(req.body.colaborador);
     let newColaborador = null;
 
     // verificar se o salão existe
@@ -41,7 +42,13 @@ router.post('/', async (req, res) => {
     // Se não existir colaborador
     if (!existeColaborador) {
       newColaborador = await new Colaborador({
-        ...colaborador,
+        dataNascimento: colaborador.dataNascimento,
+        nome: colaborador.nome,
+        email: colaborador.email,
+        telefone: colaborador.telefone,
+        sexo: colaborador.sexo,
+        especialidades: colaborador.especialidades,
+        vinculo: colaborador.vinculo,
       }).save({ session });
     }
 
@@ -133,6 +140,26 @@ router.post('/', async (req, res) => {
     await session.abortTransaction();
     session.endSession();
     res.json({ error: true, message: err.message });
+  }
+});
+
+router.post('/delete-arquivo', async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: true, message: 'É necessario informar um id' });
+    }
+
+    const response = await deleteFileS3(id);
+
+    if (response.error) {
+      return res.status(404).json({ error: true, message: response.message });
+    }
+
+    return res.json({ error: false, message: 'Arquivo deletado' });
+  } catch (err) {
+    return res.status(422).json({ error: true, message: err.message });
   }
 });
 
@@ -236,7 +263,7 @@ router.put('/:colaboradorId/image', async (req, res) => {
 
       // CRIAR ARQUIVO
       const arquivos = urlArquivos.map((arquivo) => ({
-        referenciaId: colaborador.colaboradorId,
+        referenciaId: colaboradorId,
         model: 'Colaborador',
         arquivo,
       }));
@@ -258,7 +285,10 @@ router.put('/:colaboradorId/image', async (req, res) => {
 
 router.delete('/vinculo/:id', async (req, res) => {
   try {
+    const { id } = req.body;
     const salaoColaborador = await SalaoColaborador.findByIdAndUpdate(req.params.id, { status: 'E' });
+
+    await ColaboradorServico.findOneAndDelete({ colaboradorId: id });
 
     if (!salaoColaborador) {
       return res.status(404).json({
@@ -293,6 +323,8 @@ router.get('/salao/:salaoId', async (req, res) => {
     const { salaoId } = req.params;
     const listaColaboradores = [];
 
+    const servicosSalao = '';
+
     // Recuperar vinculos
     const salaoColaboradores = await SalaoColaborador.find({
       salaoId,
@@ -302,12 +334,18 @@ router.get('/salao/:salaoId', async (req, res) => {
       .select('colaboradorId dataCadastro status');
 
     for (const vinculo of salaoColaboradores) {
+      const [arquivo] = await Arquivo.find({
+        model: 'Colaborador',
+        referenciaId: vinculo.colaboradorId._id,
+      });
+
       const especialidades = await ColaboradorServico.find({
         colaboradorId: vinculo.colaboradorId._id,
       });
 
       listaColaboradores.push({
         ...vinculo._doc,
+        foto: arquivo ? arquivo._doc.arquivo : undefined,
         especialidades: especialidades.map((especialidade) => especialidade.servicoId),
       });
     }
@@ -316,6 +354,7 @@ router.get('/salao/:salaoId', async (req, res) => {
       error: false,
       colaboradores: listaColaboradores.map((vinculo) => ({
         ...vinculo.colaboradorId._doc,
+        foto: vinculo.foto,
         vinculoId: vinculo._id,
         vinculo: vinculo.status,
         especialidades: vinculo.especialidades,

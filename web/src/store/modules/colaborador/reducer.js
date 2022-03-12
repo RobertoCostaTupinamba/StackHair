@@ -16,6 +16,7 @@ const INITIAL_STATE = {
     email: '',
     nome: '',
     telefone: '',
+    foto: '',
     dataNascimento: '',
     sexo: 'M',
     vinculo: 'A',

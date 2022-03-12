@@ -61,20 +61,41 @@ export function* addColaborador() {
     yield put(updateColaborador({ form: { ...form, saving: true } }));
     let res = {};
 
-    if (behavior === 'create') {
-      const response = yield call(api.post, '/colaborador', {
-        colaborador,
-        salaoId: sessionStorage.getItem('salaoId'),
+    if (Array.isArray(colaborador.foto)) {
+      const formData = new FormData();
+      formData.append('salaoId', sessionStorage.getItem('salaoId'));
+      colaborador.foto.map((a, i) => {
+        formData.append(`arquivo_${i}`, a);
       });
-      res = response.data;
+      if (colaborador._id) {
+        const response = yield call(api.put, `/colaborador/${colaborador._id}/image`, formData);
+        res = response.data;
+      }
+    }
+
+    if (behavior === 'create') {
+      const formData = new FormData();
+      formData.append('salaoId', sessionStorage.getItem('salaoId'));
+      formData.append('colaborador', JSON.stringify(colaborador));
+      colaborador.foto.map((a, i) => {
+        formData.append(`arquivo_${i}`, a);
+      });
+
+      console.log(formData);
+
+      const response = yield call(api.post, '/colaborador', formData);
+
+      res = { ...res, ...response.data };
     } else {
       const response = yield call(api.put, `/colaborador/${colaborador._id}`, {
         vinculo: colaborador.vinculo,
         vinculoId: colaborador.vinculoId,
         especialidades: colaborador.especialidades,
       });
-      res = response.data;
+      res = { ...res, ...response.data };
     }
+
+    console.log(res);
 
     yield put(updateColaborador({ form: { ...form, saving: false } }));
 
@@ -115,6 +136,8 @@ export function* allColaboradores() {
     const { data: res } = yield call(api.get, `/colaborador/salao/${sessionStorage.getItem('salaoId')}`);
     yield put(updateColaborador({ form: { ...form, filtering: false } }));
 
+    console.log(res);
+
     if (res.error) {
       // ALERT DO RSUITE
       notification('error', {
@@ -143,7 +166,9 @@ export function* unlinkColaborador() {
   try {
     yield put(updateColaborador({ form: { ...form, saving: true } }));
 
-    const { data: res } = yield call(api.delete, `/colaborador/vinculo/${colaborador.vinculoId}`);
+    const { data: res } = yield call(api.delete, `/colaborador/vinculo/${colaborador.vinculoId}`, {
+      id: colaborador._id,
+    });
     yield put(updateColaborador({ form: { ...form, saving: false } }));
 
     if (res.error) {
@@ -210,6 +235,47 @@ export function* allServicos() {
   }
 }
 
+export function* removeArquivo({ arquivo }) {
+  const { form, components } = yield select((state) => state.colaborador);
+  console.log('key', arquivo);
+  try {
+    yield put(updateColaborador({ form: { ...form, saving: true } }));
+
+    const { data: res } = yield call(api.post, `/colaborador/delete-arquivo`, {
+      id: arquivo,
+    });
+    yield put(updateColaborador({ form: { ...form, saving: false } }));
+
+    if (res.error) {
+      // ALERT DO RSUITE
+      notification('error', {
+        placement: 'topStart',
+        title: 'Ops...',
+        description: res.message,
+      });
+      return false;
+    }
+
+    yield put(allColaboradoresAction());
+    yield put(updateColaborador({ components: { ...components, drawer: false } }));
+    yield put(resetColaborador());
+
+    notification('success', {
+      placement: 'topStart',
+      title: 'Feitoooo!!',
+      description: 'Arquivo deletado com sucesso',
+    });
+  } catch (err) {
+    // COLOCAR AQUI O ALERT DO RSUITE
+    yield put(updateColaborador({ form: { ...form, saving: false } }));
+    notification('error', {
+      placement: 'topStart',
+      title: 'Ops...',
+      description: err.message,
+    });
+  }
+}
+
 export function* saveColaborador() {
   const { colaborador, form, components } = yield select((state) => state.colaborador);
 
@@ -255,4 +321,5 @@ export default all([
   takeLatest(types.UNLINK_COLABORADOR, unlinkColaborador),
   takeLatest(types.ALL_SERVICOS, allServicos),
   takeLatest(types.SAVE_COLABORADOR, saveColaborador),
+  takeLatest(types.REMOVE_ARQUIVO, removeArquivo),
 ]);

@@ -28,6 +28,10 @@ export function allServicos() {
   return { type: types.ALL_SERVICOS };
 }
 
+export function removeArquivo(arquivo) {
+  return { type: types.REMOVE_ARQUIVO, arquivo };
+}
+
 export function saveColaborador() {
   return { type: types.SAVE_COLABORADOR };
 }

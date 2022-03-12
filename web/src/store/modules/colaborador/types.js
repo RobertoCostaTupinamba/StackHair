@@ -7,6 +7,7 @@ const types = {
   UNLINK_COLABORADOR: '@colaborador/UNLINK',
   ALL_SERVICOS: '@colaborador/ALL_SERVICOS',
   SAVE_COLABORADOR: '@colaborador/SAVE',
+  REMOVE_ARQUIVO: '@colaborador/REMOVE_ARQUIVO',
 };
 
 export default types;
