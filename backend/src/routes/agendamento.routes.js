@@ -3,14 +3,17 @@ const mongoose = require('mongoose');
 
 const moment = require('moment');
 const _ = require('lodash');
+const axios = require('axios');
 const Cliente = require('../models/Cliente');
 const Salao = require('../models/Salao');
 const Horario = require('../models/Horario');
 const Servico = require('../models/Servico');
 const Colaborador = require('../models/Colaborador');
 const Agendamento = require('../models/Agendamento');
+const ApiGoogle = require('../models/ApiGoogle');
 
 const util = require('../utils/utils');
+const SalaoCliente = require('../models/relationship/SalaoCliente');
 
 const router = express.Router();
 
@@ -18,6 +21,7 @@ router.post('/', async (req, res) => {
   const db = mongoose.connection;
   const session = await db.startSession();
   session.startTransaction();
+  let geo;
 
   try {
     const { clienteId, salaoId, servicoId, colaboradorId, data } = req.body;
@@ -62,6 +66,60 @@ router.post('/', async (req, res) => {
       await session.abortTransaction();
       session.endSession();
       return res.status(404).json({ error: true, message: 'ColaboradorId não encontrado' });
+    }
+
+    let apiGoogle = await ApiGoogle.find();
+
+    if (cliente.endereco) {
+      if (cliente.endereco.logradouro && cliente.endereco.cidade && cliente.endereco.numero) {
+        if (apiGoogle.length === 0) {
+          apiGoogle = await new ApiGoogle().save();
+        }
+
+        if (apiGoogle[0].contador !== 990) {
+          apiGoogle[0].contador += 1;
+
+          const apiKey = process.env.API_KEY;
+          const endereco = `${cliente.endereco.logradouro
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '+')}+${cliente.endereco.numero.replace(/\s+/g, '+')}+${cliente.endereco.cidade
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '+')}`;
+
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${endereco}&key=${apiKey}`,
+          );
+
+          geo = {
+            type: 'Point',
+            coordinates: [
+              response.data.results[0].geometry.location.lat,
+              response.data.results[0].geometry.location.lng,
+            ],
+          };
+
+          await apiGoogle[0].save();
+        } else {
+          await session.abortTransaction();
+          session.endSession();
+          res.json({ error: true, message: 'API de geolocalização está quase no limite' });
+        }
+      }
+    }
+
+    const existentRelationship = await SalaoCliente.findOne({
+      salaoId,
+      clienteId,
+      status: { $ne: 'E' },
+    });
+
+    if (!existentRelationship) {
+      await new SalaoCliente({
+        salaoId,
+        clienteId,
+      }).save({ session });
     }
 
     // CRIAR O AGENDAMENTOS E AS TRANSAÇÕES
